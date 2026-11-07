@@ -60,7 +60,7 @@ a{color:var(--pen)}
 .tabs::-webkit-scrollbar{display:none}
 .tab{border:2px solid var(--ink); border-bottom:none; border-radius:10px 10px 0 0; padding:6px 12px 5px; font-family:var(--f-title); font-size:21px; font-weight:700; white-space:nowrap; cursor:pointer; line-height:1; min-height:40px; opacity:.8}
 .tab[aria-current="true"]{opacity:1; transform:translateY(2px); box-shadow:0 -2px 0 var(--ink) inset}
-.tab:nth-child(1){background:#ffffff} .tab:nth-child(2){background:#fff3a3} .tab:nth-child(3){background:#cfe6ff} .tab:nth-child(4){background:#ffd3e6} .tab:nth-child(5){background:#d4f5d0} .tab:nth-child(6){background:#ffe0bf}
+.tab:nth-child(1){background:#ffffff} .tab:nth-child(2){background:#fff3a3} .tab:nth-child(3){background:#cfe6ff} .tab:nth-child(4){background:#ffd3e6} .tab:nth-child(5){background:#d4f5d0} .tab:nth-child(6){background:#e6dcff} .tab:nth-child(7){background:#ffe0bf}
 
 /* ---- layout ---- */
 .pz{max-width:1500px; margin:0 auto; padding:14px 16px 0 60px; display:grid; grid-template-columns:260px minmax(0,1fr) 330px; gap:22px; align-items:start; position:relative; z-index:1}
@@ -1260,6 +1260,162 @@ const PRUEBA_FULL = [
 // péndulo: mostrar el despeje
 OLD['pz-pendulo'].steps.splice(0, 0, {t:R_`Despejamos \(L\): \(\frac{T}{2\pi}=\sqrt{\frac L{9.8}}\Rightarrow\frac{T^2}{4\pi^2}=\frac L{9.8}\Rightarrow L=\frac{9.8\,T^2}{4\pi^2}\). Con \(T=2\): \(L_0=\frac{9.8\cdot4}{4\pi^2}=\frac{9.8}{\pi^2}\).`, k:R_`Para despejar de una raíz: aísla la raíz y eleva al cuadrado.`});
 
+
+/* =================== Capítulo nuevo: práctica tipo Stewart 2.4 / 2.5 y Larson 1.4 (adaptados) =================== */
+const PRACT = [
+/* ---- ε–δ aplicados (Stewart 2.4) ---- */
+{ id:'s-disco800', type:'epsdelta', src:'Tipo Stewart 2.4 · adaptado', title:'Tornero: disco de 800 cm² ± 4 cm²',
+  st:R_`Un tornero debe fabricar un disco circular de área 800 cm². a) ¿Qué radio produce ese disco? b) Si se permite un error de ±4 cm² en el área, ¿con qué precisión debe controlar el radio? c) En términos de la definición ε–δ de \(\lim_{x\to a}f(x)=L\), ¿qué son \(x\), \(f(x)\), \(a\), \(L\), \(\varepsilon\) y \(\delta\)?`,
+  steps:[
+    {t:R_`<b>a)</b> \(\pi r^2=800\Rightarrow r^2=\frac{800}\pi\approx254.65\Rightarrow r_0=\sqrt{254.65}\approx15.9577\) cm.`},
+    {t:R_`<b>b)</b> La tolerancia ya viene en cm²: \(\varepsilon=4\) (no hay que convertir porcentajes).`, k:R_`Lee bien: “±4 cm²” es \(\varepsilon\) directamente; “±5 %” habría que convertirlo.`},
+    {t:R_`\(|\pi r^2-800|\lt4\iff796\lt\pi r^2\lt804\iff\sqrt{\tfrac{796}\pi}\lt r\lt\sqrt{\tfrac{804}\pi}\iff15.9177\lt r\lt15.9975\).`},
+    {t:R_`Distancias a \(r_0=15.9577\): abajo \(0.03994\); arriba \(0.03984\). \(\delta=0.0398\) cm (la menor): menos de 0.4 mm.`, k:R_`\(\delta\) = menor distancia de \(r_0\) a los extremos.`},
+    {t:R_`<b>c)</b> \(x\) = radio \(r\); \(f(x)\) = área \(\pi r^2\); \(a=r_0\approx15.9577\) cm; \(L=800\) cm²; \(\varepsilon=4\) cm²; \(\delta\approx0.0398\) cm.`}],
+  ans:R_`\(r_0\approx15.958\) cm; \(\delta\approx0.0398\) cm`,
+  model: R_`<div class="lit"><span class="litl">a)</span><div>\(\pi r^2=800\Rightarrow r_0=\sqrt{800/\pi}\approx15.958\) cm.</div></div><div class="lit"><span class="litl">b)</span><div>\(|\pi r^2-800|\lt4\iff796\lt\pi r^2\lt804\iff15.9177\lt r\lt15.9975\). Las distancias a \(r_0\) son 0.0399 y 0.0398; tomando la menor, el radio debe estar a menos de \(\delta\approx0.0398\) cm de \(r_0\).</div></div><div class="lit"><span class="litl">c)</span><div>\(x\): radio; \(f(x)=\pi x^2\): área; \(a=\sqrt{800/\pi}\); \(L=800\); \(\varepsilon=4\) cm²; \(\delta\approx0.0398\) cm.</div></div>`,
+  g:{x:[15.8,16.1], y:[790,810], xstep:0.05, ystep:5, shade:[{a:15.9577-0.0398, b:15.9577+0.0398, c:'grid'}], hband:[{a:796,b:804}], pieces:[{f:r=>Math.PI*r*r, a:15.7, b:16.2}], hlines:[{y:796,c:'acc'},{y:804,c:'acc'}]} },
+
+{ id:'s-horno198', type:'epsdelta', src:'Tipo Stewart 2.4 · variante', title:'Horno a 198 °C ± 1 °C',
+  st:R_`Con el mismo horno \(T(w)=0.1w^2+2.155w+20\): a) ¿qué potencia mantiene 198 °C? b) Si se permite ±1 °C, ¿qué rango de potencias sirve? c) Identifique \(\varepsilon\) y \(\delta\).`,
+  steps:[
+    {t:R_`<b>a)</b> \(0.1w^2+2.155w+20=198\Rightarrow0.1w^2+2.155w-178=0\Rightarrow w^2+21.55w-1780=0\) (multiplicando por 10).`},
+    {t:R_`Discriminante: \(21.55^2+4(1780)=464.40+7120=7584.40\); \(\sqrt{7584.40}\approx87.089\). \(w_0=\frac{-21.55+87.089}2\approx32.769\) W.`},
+    {t:R_`<b>b)</b> \(197\lt T\lt199\). \(T=197\): \(w^2+21.55w-1770=0\Rightarrow w=32.6543\). \(T=199\): \(w^2+21.55w-1790=0\Rightarrow w=32.8839\).`, k:R_`Cambia solo el número de la derecha: el procedimiento es idéntico.`},
+    {t:R_`Rango: \(32.654\lt w\lt32.884\) W. Distancias: \(0.1150\) y \(0.1147\) ⇒ \(\delta\approx0.1147\) W.`},
+    {t:R_`<b>c)</b> \(x=w\) (potencia), \(f(x)=T(w)\), \(a\approx32.769\), \(L=198\), \(\varepsilon=1\) °C, \(\delta\approx0.115\) W.`}],
+  ans:R_`\(w_0\approx32.77\) W; \(\delta\approx0.115\) W`,
+  model: R_`\(T(w_0)=198\Rightarrow w_0\approx32.77\) W. \(|T(w)-198|\lt1\iff197\lt T(w)\lt199\iff32.654\lt w\lt32.884\). La menor distancia a \(w_0\) es \(0.115\): con \(\varepsilon=1\) °C, \(\delta\approx0.115\) W. En la definición: \(x\) = potencia, \(f\) = temperatura, \(a=32.77\), \(L=198\).` },
+
+{ id:'s-lineal', type:'epsdelta', src:'Tipo Stewart 2.4', title:'Hallar δ y demostrar un límite lineal',
+  st:R_`Para \(\lim_{x\to3}(4x-5)=7\): a) halle \(\delta\) para \(\varepsilon=0.1\) y \(\varepsilon=0.01\); b) demuestre el límite con la definición ε–δ.`,
+  steps:[
+    {t:R_`Partimos de lo que queremos que sea pequeño: \(|(4x-5)-7|=|4x-12|=4|x-3|\).`, k:R_`Siempre empieza por \(|f(x)-L|\) y busca que aparezca \(|x-a|\).`},
+    {t:R_`\(4|x-3|\lt\varepsilon\iff|x-3|\lt\frac\varepsilon4\). Entonces sirve \(\delta=\frac\varepsilon4\).`},
+    {t:R_`a) \(\varepsilon=0.1\Rightarrow\delta=0.025\); \(\varepsilon=0.01\Rightarrow\delta=0.0025\).`},
+    {t:R_`b) <b>Demostración.</b> Dado \(\varepsilon\gt0\), sea \(\delta=\frac\varepsilon4\). Si \(0\lt|x-3|\lt\delta\), entonces \(|(4x-5)-7|=4|x-3|\lt4\delta=\varepsilon\). ∎`, k:R_`En funciones lineales \(\delta=\varepsilon/|\text{pendiente}|\).`}],
+  ans:R_`\(\delta=\varepsilon/4\)`,
+  model: R_`Dado \(\varepsilon\gt0\), elijo \(\delta=\frac\varepsilon4\). Si \(0\lt|x-3|\lt\delta\): \(|(4x-5)-7|=|4x-12|=4|x-3|\lt4\cdot\frac\varepsilon4=\varepsilon\). Por la definición, \(\lim_{x\to3}(4x-5)=7\). ∎ Para \(\varepsilon=0.1\), \(\delta=0.025\); para \(\varepsilon=0.01\), \(\delta=0.0025\).` },
+
+{ id:'s-cuad', type:'epsdelta', src:'Tipo Stewart 2.4', title:'Demostrar lim x² = 4 cuando x → 2',
+  st:R_`Demuestre con la definición ε–δ que \(\lim_{x\to2}x^2=4\).`,
+  steps:[
+    {t:R_`\(|x^2-4|=|x-2|\,|x+2|\). Aparece \(|x-2|\), pero multiplicado por \(|x+2|\), que depende de \(x\).`},
+    {t:R_`<b>Truco:</b> restringimos primero \(\delta\le1\). Si \(|x-2|\lt1\Rightarrow1\lt x\lt3\Rightarrow3\lt x+2\lt5\Rightarrow|x+2|\lt5\).`, k:R_`Cuando sobra un factor con \(x\), se acota limitando \(\delta\le1\).`},
+    {t:R_`Entonces \(|x^2-4|\lt5|x-2|\). Para que sea \(\lt\varepsilon\) basta \(|x-2|\lt\frac\varepsilon5\).`},
+    {t:R_`<b>Elección:</b> \(\delta=\min\{1,\frac\varepsilon5\}\) (cumple las dos restricciones).`},
+    {t:R_`Si \(0\lt|x-2|\lt\delta\): \(|x^2-4|=|x-2||x+2|\lt\frac\varepsilon5\cdot5=\varepsilon\). ∎`},
+    {t:R_`Ejemplo: \(\varepsilon=0.1\Rightarrow\delta=\min\{1,0.02\}=0.02\).`, w:R_`No uses \(\delta=\frac{\varepsilon}{|x+2|}\): \(\delta\) no puede depender de \(x\).`}],
+  ans:R_`\(\delta=\min\{1,\ \varepsilon/5\}\)`,
+  model: R_`Dado \(\varepsilon\gt0\), sea \(\delta=\min\{1,\frac\varepsilon5\}\). Si \(0\lt|x-2|\lt\delta\), como \(\delta\le1\) se tiene \(1\lt x\lt3\) y \(|x+2|\lt5\). Entonces \(|x^2-4|=|x-2||x+2|\lt\frac\varepsilon5\cdot5=\varepsilon\). Por lo tanto \(\lim_{x\to2}x^2=4\). ∎` },
+
+{ id:'s-raiz', type:'epsdelta', src:'Tipo Stewart 2.4', title:'Hallar δ para una raíz',
+  st:R_`Halle un \(\delta\) tal que si \(|x-2|\lt\delta\), entonces \(|\sqrt{x+2}-2|\lt0.1\).`,
+  steps:[
+    {t:R_`Aquí \(f(x)=\sqrt{x+2}\), \(a=2\), \(L=\sqrt4=2\), \(\varepsilon=0.1\).`},
+    {t:R_`\(|\sqrt{x+2}-2|\lt0.1\iff1.9\lt\sqrt{x+2}\lt2.1\).`},
+    {t:R_`Elevamos al cuadrado (todo positivo): \(3.61\lt x+2\lt4.41\iff1.61\lt x\lt2.41\).`, k:R_`Para quitar una raíz en una desigualdad de positivos, eleva al cuadrado.`},
+    {t:R_`Distancias a 2: \(2-1.61=0.39\); \(2.41-2=0.41\). \(\delta=0.39\) (la menor).`}],
+  ans:R_`\(\delta=0.39\)`,
+  model: R_`\(|\sqrt{x+2}-2|\lt0.1\iff1.9\lt\sqrt{x+2}\lt2.1\iff3.61\lt x+2\lt4.41\iff1.61\lt x\lt2.41\). Las distancias de \(a=2\) a los extremos son 0.39 y 0.41; con \(\delta=0.39\) se cumple la condición.`,
+  g:{x:[1.4,2.6], y:[1.7,2.3], xstep:0.2, ystep:0.1, shade:[{a:1.61, b:2.39, c:'grid'}], hband:[{a:1.9,b:2.1}], pieces:[{f:x=>Math.sqrt(x+2), a:1, b:3}], hlines:[{y:1.9,c:'acc'},{y:2.1,c:'acc'}]} },
+
+/* ---- continuidad (Stewart 2.5) ---- */
+{ id:'s-porque', type:'redefinir', src:'Tipo Stewart 2.5', title:'Explique por qué es discontinua',
+  st:R_`\(f(x)=\begin{cases}\dfrac{x^2-x}{x^2-1},&x\neq1\\[1mm]1,&x=1\end{cases}\). Explique por qué \(f\) es discontinua en \(x=1\). ¿Hay otros puntos de discontinuidad?`,
+  steps:[
+    {t:R_`Revisamos las 3 condiciones en \(x=1\). (1) \(f(1)=1\): existe.`},
+    {t:R_`(2) Límite: al sustituir sale \(\frac00\). Factorizamos: \(\dfrac{x(x-1)}{(x-1)(x+1)}=\dfrac{x}{x+1}\) para \(x\neq1\) ⇒ \(\lim_{x\to1}f=\frac12\).`},
+    {t:R_`(3) \(\frac12\neq1\) ⇒ <mark>falla la condición 3</mark>: discontinua en 1 (evitable; se arreglaría con \(f(1)=\frac12\)).`, k:R_`“Explique por qué es discontinua” = di <b>qué condición</b> falla y muéstralo.`},
+    {t:R_`Otros puntos: \(x^2-1=0\) también en \(x=-1\). Ahí \(f\) no está definida y \(\frac{x}{x+1}\to\frac{-1}{0}\): discontinuidad infinita.`, w:R_`No olvides el otro cero del denominador.`}],
+  ans:R_`En 1 falla \(\lim f=f(1)\) (\(\frac12\neq1\)); en −1 hay asíntota`,
+  model: R_`En \(x=1\): \(f(1)=1\). Para \(x\neq1\), \(f(x)=\frac{x(x-1)}{(x-1)(x+1)}=\frac x{x+1}\), así que \(\lim_{x\to1}f(x)=\frac12\). Como \(\lim_{x\to1}f(x)=\frac12\neq1=f(1)\), \(f\) es discontinua en 1 (discontinuidad evitable). Además \(f\) no está definida en \(x=-1\), donde \(\lim_{x\to-1^\pm}f=\mp\infty\): discontinuidad infinita.`,
+  g:{x:[-3,3], y:[-4,5], pieces:[{f:x=>x/(x+1), a:-4, b:-1},{f:x=>x/(x+1), a:-1, b:4}], vlines:[{x:-1,c:'warn'}], dots:[{x:1,y:0.5,open:true},{x:1,y:1,c:'warn'}]} },
+
+{ id:'s-dominio', type:'intervalos', src:'Tipo Stewart 2.5', title:'¿Dónde es continua? (tangente y raíz)',
+  st:R_`Determine dónde es continua \(B(x)=\dfrac{\tan x}{\sqrt{4-x^2}}\).`,
+  steps:[
+    {t:R_`Condiciones de cada pieza: la raíz está en el denominador ⇒ \(4-x^2\gt0\) (estricto: no puede ser 0 abajo).`, k:R_`Raíz en el denominador ⇒ radicando \(\gt0\), no \(\ge0\).`},
+    {t:R_`\(4-x^2\gt0\iff x^2\lt4\iff-2\lt x\lt2\).`},
+    {t:R_`\(\tan x=\frac{\operatorname{sen}x}{\cos x}\) exige \(\cos x\neq0\): \(x\neq\frac\pi2+k\pi\). Dentro de \((-2,2)\) solo caen \(\pm\frac\pi2\approx\pm1.571\) (\(\frac{3\pi}2\approx4.71\) queda fuera).`, q:R_`\(\tan\) es continua donde \(\cos\neq0\): ${RF('d-sencos','D6')} y ${RF('d-racional','D3')}.`},
+    {t:R_`Intersección: \(B\) es continua en \(\left(-2,-\tfrac\pi2\right)\cup\left(-\tfrac\pi2,\tfrac\pi2\right)\cup\left(\tfrac\pi2,2\right)\).`}],
+  ans:R_`\((-2,-\frac\pi2)\cup(-\frac\pi2,\frac\pi2)\cup(\frac\pi2,2)\)`,
+  model: R_`El denominador exige \(4-x^2\gt0\iff-2\lt x\lt2\). La tangente exige \(\cos x\neq0\), es decir \(x\neq\frac\pi2+k\pi\); en \((-2,2)\) se excluyen \(x=\pm\frac\pi2\). Como cociente y composición de funciones continuas en su dominio, \(B\) es continua en \(\left(-2,-\frac\pi2\right)\cup\left(-\frac\pi2,\frac\pi2\right)\cup\left(\frac\pi2,2\right)\).` },
+
+{ id:'s-usar', type:'intervalos', src:'Tipo Stewart 2.5', title:'Usar la continuidad para calcular límites',
+  st:R_`Calcule usando continuidad: a) \(\displaystyle\lim_{x\to4}\frac{5+\sqrt x}{\sqrt{5+x}}\); b) \(\displaystyle\lim_{x\to\pi}\operatorname{sen}(x+\operatorname{sen}x)\); c) \(\displaystyle\lim_{x\to1}e^{x^2-x}\).`,
+  steps:[
+    {t:R_`<b>Idea:</b> si la función es continua en \(a\), el límite es \(f(a)\). Solo hay que justificar la continuidad y sustituir.`, k:R_`Justifica primero (“es continua porque…”) y luego sustituye.`},
+    {t:R_`a) Numerador y denominador continuos en \(x=4\), y \(\sqrt{5+4}=3\neq0\). ⇒ \(\frac{5+\sqrt4}{\sqrt9}=\frac{5+2}3=\frac73\).`},
+    {t:R_`b) \(x+\operatorname{sen}x\) es continua y \(\operatorname{sen}\) también ⇒ composición continua: \(\operatorname{sen}(\pi+\operatorname{sen}\pi)=\operatorname{sen}(\pi+0)=0\).`, q:R_`${RF('d-sencos','D6')} y ${RF('d-comp','D10')}.`},
+    {t:R_`c) \(x^2-x\) polinomio y \(e^u\) continua ⇒ \(e^{1-1}=e^0=1\).`, q:R_`${RF('d-exp','D8')}.`}],
+  ans:R_`a) \(\frac73\) b) \(0\) c) \(1\)`,
+  model: R_`a) La función es cociente de continuas con denominador \(\sqrt9=3\neq0\) en \(x=4\): \(\lim=\frac{5+2}{3}=\frac73\). b) \(\operatorname{sen}(x+\operatorname{sen}x)\) es composición de continuas: \(\lim=\operatorname{sen}(\pi+0)=0\). c) \(e^{x^2-x}\) es composición de continuas: \(\lim=e^0=1\).` },
+
+{ id:'s-senk', type:'parametros', src:'Tipo Stewart 2.5', title:'Hallar k con un límite trigonométrico',
+  st:R_`\(g(x)=\begin{cases}\dfrac{\operatorname{sen}(3x)}{x},&x\neq0\\k,&x=0\end{cases}\). Halle \(k\) para que \(g\) sea continua.`,
+  steps:[
+    {t:R_`Para \(x\neq0\) es cociente de continuas: continua. Solo se analiza \(x=0\), donde sale \(\frac00\).`},
+    {t:R_`Multiplicamos y dividimos por 3: \(\dfrac{\operatorname{sen}3x}{x}=3\cdot\dfrac{\operatorname{sen}3x}{3x}\).`, k:R_`Para usar \(\frac{\operatorname{sen}u}{u}\to1\), el denominador debe ser <b>igual</b> al argumento del seno.`},
+    {t:R_`Con \(u=3x\to0\): \(\lim_{x\to0}g=3\cdot1=3\).`, q:R_`Límite notable: ${RF('d-senx','D7')}.`},
+    {t:R_`Continuidad: \(k=g(0)=3\).`, w:R_`\(\frac{\operatorname{sen}3x}{x}\) no tiende a 1: tiende a 3.`}],
+  ans:R_`\(k=3\)`,
+  model: R_`Para \(x\neq0\), \(g\) es continua. En 0: \(\lim_{x\to0}\frac{\operatorname{sen}3x}{x}=\lim_{x\to0}3\cdot\frac{\operatorname{sen}3x}{3x}=3\cdot1=3\). Para que \(g\) sea continua en 0 debe cumplirse \(g(0)=k=3\).` },
+
+{ id:'s-expc', type:'parametros', src:'Tipo Stewart 2.5', title:'Hallar c con exponencial',
+  st:R_`\(f(x)=\begin{cases}x+2,&x\lt0\\c\,e^{x},&x\ge0\end{cases}\). Halle \(c\).`,
+  steps:[
+    {t:R_`Tramos continuos (polinomio; \(c\,e^x\) continua). Unión \(x=0\).`, q:R_`${RF('d-exp','D8')}.`},
+    {t:R_`\(\lim_{x\to0^-}(x+2)=2\); \(f(0)=c\,e^0=c\cdot1=c\).`, k:R_`\(e^0=1\).`},
+    {t:R_`\(c=2\). Verificar: ambos lados valen 2 ✓.`}],
+  ans:R_`\(c=2\)`,
+  model: R_`Ambos tramos son continuos. En \(x=0\): \(\lim_{x\to0^-}f=0+2=2\) y \(f(0)=\lim_{x\to0^+}f=c\,e^0=c\). La continuidad exige \(c=2\).`,
+  g:{x:[-3,2], y:[-1,10], pieces:[{f:x=>x+2, a:-4, b:0, cb:false, c:'ink'},{f:x=>2*Math.exp(x), a:0, b:3, ca:true}]} },
+
+/* ---- Larson 1.4 ---- */
+{ id:'s-envio', type:'tarifas', src:'Tipo Larson 1.4 · adaptado', title:'Costo de envío por kilogramo',
+  st:R_`Una empresa cobra 3 dólares por el primer kilogramo (o fracción) y 1.50 dólares por cada kilogramo adicional (o fracción). a) Modele el costo \(C(x)\) para \(0\lt x\le4\) kg. b) Analice la continuidad.`,
+  steps:[
+    {t:R_`“O fracción” significa que 1.2 kg se cobra como 2 kg: se redondea <b>hacia arriba</b>.`, k:R_`“Por cada … o fracción” ⇒ función escalón (redondeo hacia arriba \(\lceil x\rceil\)).`},
+    {t:R_`\[C(x)=\begin{cases}3,&0\lt x\le1\\4.5,&1\lt x\le2\\6,&2\lt x\le3\\7.5,&3\lt x\le4\end{cases}\]En general \(C(x)=3+1.5(\lceil x\rceil-1)\).`},
+    {t:R_`En \(x=1\): \(C(1)=3\); \(\lim_{x\to1^-}C=3\); \(\lim_{x\to1^+}C=4.5\). Los laterales difieren ⇒ <mark>salto</mark>. Igual en 2 y 3.`},
+    {t:R_`Es continua por la izquierda en cada entero (por el “\(\le\)”), pero no continua. Interpretación: pasar de 1 kg a 1.01 kg sube el costo 1.50 de golpe.`}],
+  ans:R_`Saltos de 1.50 $ en \(x=1,2,3\)`,
+  model: R_`\(C(x)=3\) si \(0\lt x\le1\); \(4.5\) si \(1\lt x\le2\); \(6\) si \(2\lt x\le3\); \(7.5\) si \(3\lt x\le4\). En cada intervalo es constante, luego continua. En \(x=1\): \(\lim_{x\to1^-}C=3\neq4.5=\lim_{x\to1^+}C\), así que el límite no existe: discontinuidad de salto; igual en \(x=2\) y \(x=3\). El costo aumenta bruscamente 1.50 dólares al pasar cada kilogramo entero.`,
+  g:{x:[0,4], y:[0,9], xstep:0.5, ystep:1.5, pieces:[[0,1,3],[1,2,4.5],[2,3,6],[3,4,7.5]].map(([a,b,v])=>({f:()=>v, a, b, ca:false, cb:true}))} },
+
+{ id:'s-tvi1', type:'tvi', src:'Tipo Stewart 2.5 / Larson 1.4', title:'TVI: raíz de x⁴ + x − 3 y aproximación',
+  st:R_`Demuestre que \(x^4+x-3=0\) tiene una raíz en \((1,2)\) y aproxímela con 3 pasos de bisección.`,
+  steps:[
+    {t:R_`\(f(x)=x^4+x-3\) es polinomio ⇒ continua en \([1,2]\).`, k:R_`Primero la continuidad, siempre.`},
+    {t:R_`\(f(1)=1+1-3=-1\lt0\); \(f(2)=16+2-3=15\gt0\). Cambio de signo ⇒ hay raíz en \((1,2)\) (Bolzano).`, q:R_`${RF('d-tvi','D11')}.`},
+    {t:R_`Bisección: \(f(1.5)\approx3.56\gt0\) ⇒ raíz en \((1,1.5)\). \(f(1.25)\approx0.69\gt0\) ⇒ \((1,1.25)\). \(f(1.125)\approx-0.27\lt0\) ⇒ \((1.125,1.25)\).`},
+    {t:R_`La raíz está entre 1.125 y 1.25 (≈ 1.16).`}],
+  ans:R_`Raíz en \((1.125,\ 1.25)\)`,
+  model: R_`\(f(x)=x^4+x-3\) es un polinomio, por lo tanto continua en \([1,2]\). Como \(f(1)=-1\lt0\) y \(f(2)=15\gt0\), por el Teorema del Valor Intermedio existe \(c\in(1,2)\) con \(f(c)=0\). Por bisección: \(f(1.5)\gt0\), \(f(1.25)\gt0\), \(f(1.125)\lt0\), así que \(c\in(1.125,\,1.25)\).`,
+  g:{x:[0.8,2], y:[-2,6], xstep:0.2, ystep:1, pieces:[{f:x=>x**4+x-3, a:0.5, b:2.2}], shade:[[1.125,1.25]]} },
+
+{ id:'s-tvi2', type:'tvi', src:'Tipo Stewart 2.5', title:'TVI: la ecuación eˣ = 3 − 2x',
+  st:R_`Demuestre que la ecuación \(e^x=3-2x\) tiene al menos una solución real.`,
+  steps:[
+    {t:R_`Pasamos todo a un lado: \(f(x)=e^x+2x-3\). Una solución de la ecuación es una raíz de \(f\).`, k:R_`Para una ecuación \(A=B\), aplica el TVI a \(f=A-B\).`},
+    {t:R_`\(f\) es suma de continuas ⇒ continua en \(\mathbb R\).`, q:R_`${RF('d-exp','D8')}.`},
+    {t:R_`Buscamos dónde cambia de signo: \(f(0)=1+0-3=-2\lt0\); \(f(1)=e+2-3=e-1\approx1.72\gt0\).`},
+    {t:R_`Por Bolzano existe \(c\in(0,1)\) con \(f(c)=0\), es decir \(e^c=3-2c\). ∎`}],
+  ans:R_`Hay una solución en \((0,1)\)`,
+  model: R_`Sea \(f(x)=e^x+2x-3\), continua en \([0,1]\) por ser suma de funciones continuas. \(f(0)=-2\lt0\) y \(f(1)=e-1\gt0\). Por el Teorema del Valor Intermedio existe \(c\in(0,1)\) con \(f(c)=0\), es decir, \(e^c=3-2c\). ∎` },
+
+{ id:'s-tvi3', type:'tvi', src:'Tipo Larson 1.4 · adaptado', title:'TVI aplicado: volumen de una esfera',
+  st:R_`El volumen de una esfera es \(V(r)=\frac43\pi r^3\). Demuestre que existe un radio entre 5 y 8 cm con volumen exactamente 1500 cm³ y encuéntrelo.`,
+  steps:[
+    {t:R_`\(V\) es un polinomio en \(r\) ⇒ continua en \([5,8]\).`},
+    {t:R_`\(V(5)=\frac43\pi(125)\approx523.6\); \(V(8)=\frac43\pi(512)\approx2144.7\). 1500 está entre ambos.`, k:R_`TVI con un valor \(N\) (no solo 0): basta que \(N\) esté entre \(f(a)\) y \(f(b)\).`},
+    {t:R_`Por el TVI existe \(c\in(5,8)\) con \(V(c)=1500\).`},
+    {t:R_`Encontrarlo: \(\frac43\pi r^3=1500\Rightarrow r^3=\frac{1500\cdot3}{4\pi}\approx358.1\Rightarrow r\approx7.10\) cm ✓ (está en \((5,8)\)).`}],
+  ans:R_`\(r\approx7.10\) cm`,
+  model: R_`\(V(r)=\frac43\pi r^3\) es continua en \([5,8]\). Como \(V(5)\approx523.6\lt1500\lt2144.7\approx V(8)\), por el Teorema del Valor Intermedio existe \(c\in(5,8)\) con \(V(c)=1500\). Despejando: \(c=\sqrt[3]{\frac{4500}{4\pi}}\approx7.10\) cm.` }
+];
+
 const INICIO_HTML = R_`
 <div class="sheet">
 <h3>Cómo usar este cuaderno</h3>
@@ -1268,7 +1424,7 @@ const INICIO_HTML = R_`
 <p><span style="color:var(--red); border:1.5px solid var(--red); border-radius:6px; padding:0 5px">¡Ojo!</span> la trampa o el error que más baja puntos.</p>
 <p><span style="color:var(--pen); border-bottom:2px dashed var(--pen)">¿Por qué?</span> toca para ver la justificación; los enlaces como <b>D8</b> te llevan a la demostración completa, y el botón <b>← Volver al ejercicio</b> te regresa.</p>
 <h3>Ruta sugerida</h3>
-<p>1. <b>Demostraciones</b>: de dónde salen los teoremas que usas. 2. <b>Taller</b>: los 19 ejercicios. 3. <b>Prueba 2 y horno</b>: hazlos primero en hoja. 4. <b>Tipo examen</b>: los modelos que pueden tomar. 5. <b>Resumen</b>: la noche antes.</p>
+<p>1. <b>Demostraciones</b>: de dónde salen los teoremas que usas. 2. <b>Taller</b>: los 19 ejercicios. 3. <b>Prueba 2 y horno</b>: hazlos primero en hoja. 4. <b>Tipo examen</b>: los modelos que pueden tomar. 5. <b>Más práctica</b>: ejercicios del estilo de los libros de donde el profesor toma las pruebas (Stewart 2.4 y 2.5, Larson 1.4), con otros números. 6. <b>Resumen</b>: la noche antes.</p>
 <h3>Controles</h3>
 <p>Computadora: flechas ← → o barra espaciadora. Celular: desliza el dedo sobre la hoja. <b>A−/A+</b> cambia la letra y <b>Ver todo</b> muestra la solución completa. Tu avance se guarda: los problemas terminados quedan con ✓ en el índice.</p>
 </div>`;
@@ -1278,6 +1434,7 @@ const CHAPTERS = [
   { id:'cap-taller', name:'Taller (19 ejercicios)', short:'Taller', items:TALLER_FULL },
   { id:'cap-prueba', name:'Prueba 2 y horno', short:'Prueba 2', items:PRUEBA_FULL },
   { id:'cap-modelos', name:'Tipo examen: modelamiento', short:'Tipo examen', items:MODELOS },
+  { id:'cap-practica', name:'Más práctica (tipo Stewart y Larson)', short:'Más práctica', items:PRACT },
   { id:'cap-resumen', name:'Resumen', short:'Resumen', items:[{ id:'resumen', type:'demo', src:'Para la noche antes', title:'Resumen de todo', page:RESUMEN_HTML }] }
 ];
 /* "¿Por qué?" en problemas heredados */
