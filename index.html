@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cuaderno de límites y continuidad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+<script>
+window.MathJax = { tex:{ inlineMath:[['\\(','\\)']], displayMath:[['\\[','\\]']] }, svg:{ fontCache:'global' } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg.min.js" async></script>
+<style>
+/* Cuaderno universitario de cuadros: tinta de esfero azul, rojo para correcciones, verde para respuestas, resaltadores para claves.
+   Layout: índice (izq) · hoja con el problema (centro) · notas adhesivas con gráfica y claves (der). Un solo tema, a propósito. */
+:root{
+  --paper:#fbfbf5;
+  --gridline:#cddbee;
+  --margin:#e7a0a0;
+  --ink:#1c2541;          /* grafito/tinta oscura */
+  --pen:#1f45b5;          /* esfero azul */
+  --red:#c62828;          /* esfero rojo */
+  --green:#1d7a3a;        /* esfero verde */
+  --hl-y:rgba(255,226,0,.45);
+  --hl-g:rgba(110,230,120,.40);
+  --hl-p:rgba(255,105,180,.30);
+  --hl-b:rgba(110,190,255,.30);
+  --note:#fff7c2;
+  /* tokens que usa el graficador */
+  --grid:rgba(110,230,120,.30); --line:#d7e2f2; --muted:#5b6275; --accent:var(--pen); --accent-soft:rgba(255,226,0,.40);
+  --warn:var(--red); --surface:var(--paper); --ok:var(--green); --bg:var(--paper);
+  --f-hand:'Kalam', 'Comic Sans MS', 'Segoe Print', cursive;
+  --f-title:'Caveat', 'Segoe Print', cursive;
+  --pz-fs:20px;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{margin:0; padding:0}
+body{
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--gridline) 1px, transparent 1px), linear-gradient(90deg, var(--gridline) 1px, transparent 1px);
+  background-size:22px 22px;
+  color:var(--ink); font-family:var(--f-hand); font-size:17px; line-height:1.5;
+}
+body::before{content:""; position:fixed; top:0; bottom:0; left:44px; width:2px; background:var(--margin); z-index:0; pointer-events:none}
+button,input,select{font:inherit; color:inherit}
+:focus-visible{outline:3px solid var(--pen); outline-offset:2px}
+mjx-container{color:var(--pen)}
+mjx-container[display="true"]{overflow-x:auto; overflow-y:hidden; margin:.35em 0 !important; padding:2px 0}
+mjx-container[display="true"] > svg{max-width:100%; height:auto}
+a{color:var(--pen)}
+
+/* ---- barra superior ---- */
+.top{position:sticky; top:0; z-index:30; background:rgba(251,251,245,.94); border-bottom:2px solid var(--ink); backdrop-filter:blur(3px)}
+.top .in{max-width:1500px; margin:0 auto; padding:8px 16px 0 60px; display:flex; flex-wrap:wrap; align-items:flex-end; gap:6px 14px}
+.brand{font-family:var(--f-title); font-weight:700; font-size:30px; line-height:1; padding-bottom:6px; white-space:nowrap}
+.brand span{color:var(--red)}
+.tabs{display:flex; gap:4px; overflow-x:auto; flex:1; scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:2px solid var(--ink); border-bottom:none; border-radius:10px 10px 0 0; padding:6px 12px 5px; font-family:var(--f-title); font-size:21px; font-weight:700; white-space:nowrap; cursor:pointer; line-height:1; min-height:40px; opacity:.8}
+.tab[aria-current="true"]{opacity:1; transform:translateY(2px); box-shadow:0 -2px 0 var(--ink) inset}
+.tab:nth-child(1){background:#ffffff} .tab:nth-child(2){background:#fff3a3} .tab:nth-child(3){background:#cfe6ff} .tab:nth-child(4){background:#ffd3e6} .tab:nth-child(5){background:#d4f5d0} .tab:nth-child(6){background:#ffe0bf}
+
+/* ---- layout ---- */
+.pz{max-width:1500px; margin:0 auto; padding:14px 16px 0 60px; display:grid; grid-template-columns:260px minmax(0,1fr) 330px; gap:22px; align-items:start; position:relative; z-index:1}
+.pz-index{position:sticky; top:84px; max-height:calc(100vh - 100px); overflow:auto; background:rgba(255,255,255,.75); border:2px solid var(--ink); border-radius:255px 12px 225px 12px/12px 225px 12px 255px; padding:12px 12px 14px; display:grid; gap:10px; align-content:start}
+.pz-index h2{font-family:var(--f-title); font-size:28px; margin:0; text-align:center; text-decoration:underline wavy var(--red) 1.5px; text-underline-offset:5px}
+.pz-grp{display:grid; gap:2px}
+.pz-gname{font-family:var(--f-title); font-size:21px; font-weight:700; color:var(--red); margin-top:4px}
+.pz-index button{text-align:left; border:none; background:transparent; border-radius:6px; padding:5px 8px; cursor:pointer; font-size:15px; line-height:1.25; display:grid; gap:0; min-height:40px}
+.pz-index button:hover{background:var(--hl-b)}
+.pz-index button[aria-current="true"]{background:var(--hl-y); font-weight:700}
+.pz-index button.seen::before{content:"✓ "; color:var(--green); font-weight:700}
+.pz-src{font-size:12px; color:var(--muted)}
+.pz-scrim{position:fixed; inset:0; background:rgba(0,0,0,.3); z-index:40}
+.pz-main{font-size:var(--pz-fs); min-width:0}
+.pz-bar{display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:15px}
+.pz-menu{display:none}
+.btn-s{border:2px solid var(--ink); background:#fff; border-radius:8px 12px 9px 11px; min-height:42px; min-width:44px; padding:0 10px; cursor:pointer; font-weight:700}
+.btn-s[aria-pressed="true"]{background:var(--ink); color:#fff}
+.pz-type{flex:1; min-width:160px; color:var(--red); font-weight:700}
+.pz-back{background:var(--hl-b)}
+.legend{display:flex; flex-wrap:wrap; gap:4px 14px; font-size:14px; color:var(--muted); margin:8px 0 2px}
+.legend b{font-family:var(--f-title); font-size:18px}
+.lg-y{background:var(--hl-y); padding:0 6px; border-radius:3px} .lg-r{color:var(--red); border:1.5px solid var(--red); border-radius:6px; padding:0 5px} .lg-b{color:var(--pen); border-bottom:1.5px dashed var(--pen)} .lg-g{color:var(--green); border:1.5px double var(--green); padding:0 5px; border-radius:4px}
+
+/* ---- hoja del problema ---- */
+.pz-head{margin-top:10px}
+.pz-srcbig{font-size:.7em; color:var(--muted)}
+.pz-head h2{font-family:var(--f-title); font-size:2em; line-height:1.05; margin:.05em 0 .15em; display:inline; background-image:linear-gradient(transparent 70%, var(--hl-p) 70%, var(--hl-p) 92%, transparent 92%)}
+.pz-st{background:rgba(255,255,255,.8); border:2px solid var(--ink); border-radius:255px 15px 225px 15px/15px 225px 15px 255px; padding:.6em 1em; margin:.7em 0 .9em; overflow-x:auto}
+.pz-st::before{content:"Enunciado"; display:block; font-family:var(--f-title); font-size:1.05em; color:var(--red); font-weight:700; line-height:1}
+.pz-steps{list-style:none; margin:0; padding:0; display:grid; gap:.5em}
+.pz-step{display:grid; grid-template-columns:2em minmax(0,1fr); gap:.55em; padding:.45em .55em .55em .25em; border-bottom:1.5px dashed rgba(28,37,65,.25); background:rgba(255,255,255,.55); border-radius:6px}
+.pz-step.pz-hid{display:none}
+.pz-step.pz-cur{background:rgba(255,255,255,.85); box-shadow:-6px 0 0 var(--hl-g)}
+.pz-n{width:1.6em; height:1.6em; border:2px solid var(--red); border-radius:50% 45% 52% 48%; color:var(--red); display:grid; place-items:center; font-weight:700; font-size:.85em; margin-top:.1em; background:#fff}
+.pz-cur .pz-n{background:var(--hl-y)}
+.pz-body{min-width:0; overflow-x:auto; overflow-y:hidden}
+mark{background:linear-gradient(100deg, transparent 1%, var(--hl-y) 3%, var(--hl-y) 97%, transparent 99%); color:inherit; padding:0 .15em; border-radius:4px}
+.hl-y{background:var(--hl-y); padding:0 4px; border-radius:3px} .hl-g{background:var(--hl-g); padding:0 4px; border-radius:3px} .hl-p{background:var(--hl-p); padding:0 4px; border-radius:3px}
+.clave,.trampa,.porque{margin-top:.5em; font-size:.93em}
+.clave{background:linear-gradient(102deg, rgba(255,226,0,0) 0.5%, var(--hl-y) 2%, rgba(255,226,0,.38) 50%, var(--hl-y) 97%, rgba(255,226,0,0) 99.5%); border-radius:12px 4px 14px 5px; padding:.35em .7em}
+.clave .lbl{font-family:var(--f-title); font-weight:700; font-size:1.15em; margin-right:.35em}
+.trampa{border:2px solid var(--red); border-radius:14px 6px 12px 8px/8px 12px 6px 14px; padding:.35em .7em; color:#7d1717; background:rgba(255,235,235,.6)}
+.trampa .lbl{font-family:var(--f-title); font-weight:700; font-size:1.15em; color:var(--red); margin-right:.35em}
+.porque{color:var(--pen)}
+.porque summary{cursor:pointer; display:inline-block; font-family:var(--f-title); font-weight:700; font-size:1.15em; border-bottom:2px dashed var(--pen); list-style:none}
+.porque summary::-webkit-details-marker{display:none}
+.porque[open] summary{margin-bottom:.2em}
+.porque > div{background:var(--hl-b); border-radius:8px; padding:.35em .7em}
+a.ref{font-weight:700; color:var(--pen); text-decoration:underline; text-decoration-style:wavy; text-underline-offset:3px; cursor:pointer}
+.pz-ans{margin-top:.8em; border:3px double var(--green); border-radius:12px 6px 10px 8px; padding:.5em .9em; color:var(--green); font-weight:700; background:rgba(230,255,235,.7); overflow-x:auto}
+.pz-ans .lbl{font-family:var(--f-title); font-size:1.25em; margin-right:.4em}
+.pz-ans mjx-container{color:var(--green)}
+.sheet{background:rgba(255,255,255,.75); border:2px solid var(--ink); border-radius:255px 15px 225px 15px/15px 225px 15px 255px; padding:.8em 1.1em; display:grid; gap:.3em}
+.sheet h3{font-family:var(--f-title); font-size:1.35em; color:var(--red); margin:.3em 0 0}
+.sheet p{margin:0}
+
+/* ---- controles ---- */
+.pz-ctrl{position:sticky; bottom:0; z-index:15; display:flex; gap:8px; align-items:center; margin-top:14px; padding:10px 0 max(10px, env(safe-area-inset-bottom)); background:linear-gradient(rgba(251,251,245,0), rgba(251,251,245,.96) 25%); font-size:16px}
+.pz-btn{border:2.5px solid var(--pen); background:var(--pen); color:#fff; border-radius:12px 8px 14px 9px; min-height:50px; padding:0 16px; font-weight:700; cursor:pointer; font-size:17px}
+#pzNext{flex:1}
+.pz-btn.ghost{background:#fff; color:var(--pen)}
+.pz-btn:disabled{opacity:.4; cursor:default}
+.pz-prog{color:var(--muted); white-space:nowrap; font-size:14px}
+.pz-hint{font-size:13px; color:var(--muted); margin:0 0 20px}
+
+/* ---- notas adhesivas ---- */
+.pz-side{position:sticky; top:84px; display:grid; gap:14px; max-height:calc(100vh - 100px); overflow:auto; padding:4px 6px 10px}
+.note{background:var(--note); box-shadow:2px 3px 0 rgba(0,0,0,.12); padding:10px 12px 12px; font-size:15px; display:grid; gap:6px}
+.note:nth-child(1){transform:rotate(-0.6deg)} .note:nth-child(2){transform:rotate(0.5deg); background:#fff3cc} .note:nth-child(3){transform:rotate(-0.4deg); background:#e9f4ff} .note:nth-child(4){transform:rotate(0.4deg); background:#ffe9f2}
+.note h3{font-family:var(--f-title); font-size:23px; margin:0; line-height:1}
+details.note > summary{cursor:pointer; list-style:none}
+details.note > summary::-webkit-details-marker{display:none}
+canvas.plot{width:100%; height:240px; display:block; background:transparent}
+.pz-claves{list-style:none; margin:0; padding:0; display:grid; gap:6px}
+.pz-claves li{background:var(--hl-y); border-radius:8px 3px 9px 4px; padding:4px 8px}
+.pz-claves li.tw{background:rgba(255,235,235,.9); border:1.5px solid var(--red); color:#7d1717}
+.pz-claves .lbl{font-family:var(--f-title); font-weight:700; font-size:18px}
+table.tb{border-collapse:collapse; margin:.4em 0; font-size:.85em; background:rgba(255,255,255,.85)}
+table.tb th,table.tb td{border:1.5px solid var(--ink); padding:.15em .55em; text-align:center}
+table.tb th{background:var(--hl-b)}
+.pz-reco,.pz-receta{margin:0; padding-left:20px; display:grid; gap:3px}
+
+@media (max-width: 1200px){
+  .pz{grid-template-columns:minmax(0,1fr) 300px}
+  .pz-index{position:fixed; top:0; bottom:0; left:0; width:min(340px,88vw); max-height:none; z-index:50; border-radius:0 16px 16px 0; transform:translateX(-106%); transition:transform .25s; background:var(--paper); background-image:linear-gradient(var(--gridline) 1px, transparent 1px), linear-gradient(90deg, var(--gridline) 1px, transparent 1px); background-size:22px 22px; padding-top:16px}
+  .pz-index.open{transform:none}
+  .pz-menu{display:inline-flex; align-items:center}
+}
+@media (max-width: 760px){
+  body::before{left:8px}
+  .top .in{padding:6px 10px 0 16px; gap:2px}
+  .brand{font-size:22px; flex-basis:100%; padding-bottom:4px}
+  .tabs{flex-basis:100%}
+  .tab{font-size:18px; padding:6px 10px 5px}
+  .pz{grid-template-columns:minmax(0,1fr); padding:8px 10px 0 16px; gap:12px}
+  .pz-side{position:static; max-height:none}
+  .pz-type{order:3; flex-basis:100%}
+  .pz-prog,.pz-hint{display:none}
+  .pz-btn{padding:0 12px}
+  .pz-step{grid-template-columns:1.7em minmax(0,1fr); gap:.4em}
+}
+@media (prefers-reduced-motion: reduce){ .pz-index{transition:none} }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in">
+    <div class="brand">Cuaderno: <span>límites y continuidad</span></div>
+    <nav class="tabs" id="tabs" aria-label="Capítulos"></nav>
+  </div>
+</header>
+
+<div class="pz">
+  <aside class="pz-index" id="pzIndex" aria-label="Índice"></aside>
+  <div class="pz-scrim" id="pzScrim" hidden></div>
+  <main class="pz-main">
+    <div class="pz-bar">
+      <button class="btn-s pz-menu" id="pzMenu" aria-controls="pzIndex" aria-expanded="false">☰ Índice</button>
+      <button class="btn-s pz-back" id="pzBack" hidden>← Volver al ejercicio</button>
+      <span class="pz-type" id="pzType"></span>
+      <button class="btn-s" id="pzFm" aria-label="Letra más pequeña">A−</button>
+      <button class="btn-s" id="pzFp" aria-label="Letra más grande">A+</button>
+      <button class="btn-s" id="pzAll" aria-pressed="false">Ver todo</button>
+    </div>
+    <div class="legend"><span><b class="lg-y">Clave</b> recuérdalo</span><span><b class="lg-r">¡Ojo!</b> trampa que baja puntos</span><span><b class="lg-b">¿Por qué?</b> toca para ver la demostración</span><span><b class="lg-g">Respuesta</b></span></div>
+    <div id="pzProb"></div>
+    <div class="pz-ctrl">
+      <button class="pz-btn ghost" id="pzPrevProb" aria-label="Problema anterior">«</button>
+      <button class="pz-btn ghost" id="pzPrev">← Atrás</button>
+      <span class="pz-prog" id="pzProg"></span>
+      <button class="pz-btn" id="pzNext">Siguiente paso →</button>
+      <button class="pz-btn ghost" id="pzNextProb" aria-label="Problema siguiente">»</button>
+    </div>
+    <p class="pz-hint">Computadora: flechas ← → o barra espaciadora. Celular: desliza el dedo sobre la hoja.</p>
+  </main>
+  <aside class="pz-side">
+    <div class="note" id="pzGraphBox"><h3>Gráfica</h3><canvas class="plot" id="pzGraph"></canvas></div>
+    <div class="note"><h3>Claves de este problema</h3><ul class="pz-claves" id="pzClaves"></ul></div>
+    <details class="note" open><summary><h3>Cómo reconocerlo</h3></summary><ul class="pz-reco" id="pzReco"></ul></details>
+    <details class="note" open><summary><h3>Receta</h3></summary><ol class="pz-receta" id="pzReceta"></ol></details>
+  </aside>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const fmt = (v, d=2) => { const s = (Math.abs(v) < 1e-9 ? 0 : v).toFixed(d); return s.includes('.') ? s.replace(/\.?0+$/, '') : s; };
+const fmtf = (v, d=2) => (Math.abs(v)<1e-9?0:v).toFixed(d);
+const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+/* ---- Partir fórmulas largas para que se ajusten al ancho (celular) ---- */
+const REL = ['\\Rightarrow','\\Longrightarrow','\\iff','\\implies','=','\\approx','\\le','\\ge','\\lt','\\gt','\\neq'];
+function splitTeX(tex){
+  if(tex.length < 26) return null;
+  const parts = []; let depth = 0, env = 0, lr = 0, last = 0, i = 0;
+  while(i < tex.length){
+    const c = tex[i];
+    if(c === '\\'){
+      if(tex.startsWith('\\begin{', i)){ env++; i += 7; continue; }
+      if(tex.startsWith('\\end{', i)){ env--; i += 5; continue; }
+      if(tex.startsWith('\\left', i) && !/[a-zA-Z]/.test(tex[i+5]||'')){ lr++; i += 5; continue; }
+      if(tex.startsWith('\\right', i) && !/[a-zA-Z]/.test(tex[i+6]||'')){ lr--; i += 6; continue; }
+      if(depth===0 && env===0 && lr===0 && i>last+3){
+        const r = REL.find(r => r.startsWith('\\') && tex.startsWith(r, i) && !/[a-zA-Z]/.test(tex[i+r.length]||''));
+        if(r && r!=='='){ parts.push(tex.slice(last, i)); last = i; i += r.length; continue; }
+      }
+      i += 2; continue;
+    }
+    if(c === '{') depth++; else if(c === '}') depth--;
+    else if(c === '=' && depth===0 && env===0 && lr===0 && i>last+3){ parts.push(tex.slice(last, i)); last = i; }
+    else if((c === ',' || c === ':') && tex.startsWith('\\ ', i+1) && depth===0 && env===0 && lr===0 && i>last+3){ parts.push(tex.slice(last, i+1)); last = i+3; i += 3; continue; }
+    i++;
+  }
+  parts.push(tex.slice(last));
+  if(parts.length < 2) return null;
+  const ds = /^\s*\\displaystyle/.test(tex) ? '\\displaystyle ' : '';
+  return parts.map((p,k) => '\\(' + (k>0 ? ds+'{}' : '') + p + '\\)').join('\u200B');
+}
+function splitMathIn(root){
+  const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.parentElement && n.parentElement.closest('script,style,mjx-container,textarea')) ? NodeFilter.FILTER_REJECT : (n.nodeValue.indexOf('\\(')>=0 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_SKIP) });
+  const nodes = []; let n; while((n = w.nextNode())) nodes.push(n);
+  nodes.forEach(t => {
+    const v = t.nodeValue.replace(/\\\(([\s\S]*?)\\\)/g, (m, inner) => {
+      return splitTeX(inner) || m;
+    });
+    if(v !== t.nodeValue) t.nodeValue = v;
+  });
+}
+splitMathIn(document.body);
+
+
+
+function niceStep(r){ const e = Math.pow(10, Math.floor(Math.log10(r))); const f = r/e; return (f<1.5?1:f<3?2:f<7?5:10)*e; }
+function plot(canvas, cfg){
+  const w = canvas.clientWidth, h = canvas.clientHeight; if(!w || !h) return;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(w*dpr); canvas.height = Math.round(h*dpr);
+  const ctx = canvas.getContext('2d'); ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,w,h);
+  const C = { grid: css('--grid'), line: css('--line'), muted: css('--muted'), ink: css('--ink'), acc: css('--accent'), accs: css('--accent-soft'), warn: css('--warn'), surf: css('--surface'), ok: css('--ok') };
+  const small = cfg.small;
+  const pad = small ? {l:8,r:8,t:8,b:8} : {l:46,r:14,t:14,b:30};
+  const [x0,x1] = cfg.x, [y0,y1] = cfg.y;
+  const X = x => pad.l + (x-x0)/(x1-x0)*(w-pad.l-pad.r);
+  const Y = y => pad.t + (y1-y)/(y1-y0)*(h-pad.t-pad.b);
+  // shading
+  (cfg.shade||[]).forEach(s => { const a = Array.isArray(s)?s[0]:s.a, b = Array.isArray(s)?s[1]:s.b, c = Array.isArray(s)?'accs':(s.c||'accs'); ctx.fillStyle = C[c]; ctx.fillRect(X(Math.max(a,x0)), pad.t, X(Math.min(b,x1))-X(Math.max(a,x0)), h-pad.t-pad.b); });
+  (cfg.hband||[]).forEach(s => { ctx.save(); ctx.globalAlpha = 0.75; ctx.fillStyle = C[s.c||'accs']; const ya = Y(Math.min(s.b,y1)), yb = Y(Math.max(s.a,y0)); ctx.fillRect(pad.l, ya, w-pad.l-pad.r, yb-ya); ctx.restore(); });
+  // grid
+  const sx = cfg.xstep || niceStep((x1-x0)/8), sy = cfg.ystep || niceStep((y1-y0)/6);
+  ctx.lineWidth = 1; ctx.strokeStyle = C.line; ctx.font = '14px "Kalam", cursive'; ctx.fillStyle = C.muted;
+  if(!small){
+    ctx.globalAlpha = .6;
+    for(let x=Math.ceil(x0/sx)*sx; x<=x1+1e-9; x+=sx){ ctx.beginPath(); ctx.moveTo(X(x),pad.t); ctx.lineTo(X(x),h-pad.b); ctx.stroke(); }
+    for(let y=Math.ceil(y0/sy)*sy; y<=y1+1e-9; y+=sy){ ctx.beginPath(); ctx.moveTo(pad.l,Y(y)); ctx.lineTo(w-pad.r,Y(y)); ctx.stroke(); }
+    ctx.globalAlpha = 1;
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    if(cfg.xticks){ cfg.xticks.forEach(t => ctx.fillText(t[1], X(t[0]), h-pad.b+6)); }
+    else for(let x=Math.ceil(x0/sx)*sx; x<=x1+1e-9; x+=sx) ctx.fillText(fmt(x,2), X(x), h-pad.b+6);
+    ctx.textAlign='right'; ctx.textBaseline='middle';
+    for(let y=Math.ceil(y0/sy)*sy; y<=y1+1e-9; y+=sy) ctx.fillText(fmt(y,2), pad.l-6, Y(y));
+  }
+  // axes
+  ctx.strokeStyle = C.muted; ctx.lineWidth = 1.3;
+  if(y0<=0 && y1>=0){ ctx.beginPath(); ctx.moveTo(pad.l,Y(0)); ctx.lineTo(w-pad.r,Y(0)); ctx.stroke(); }
+  if(x0<=0 && x1>=0){ ctx.beginPath(); ctx.moveTo(X(0),pad.t); ctx.lineTo(X(0),h-pad.b); ctx.stroke(); }
+  if(cfg.xlabel && !small){ ctx.fillStyle=C.muted; ctx.textAlign='right'; ctx.textBaseline='bottom'; ctx.fillText(cfg.xlabel, w-pad.r-2, Y(Math.max(y0,Math.min(0,y1)))-4); }
+  // vertical lines
+  (cfg.vlines||[]).forEach(v => { if(v.x<x0||v.x>x1) return; ctx.save(); ctx.setLineDash([5,5]); ctx.strokeStyle = C[v.c||'muted']; ctx.lineWidth=1.3; ctx.beginPath(); ctx.moveTo(X(v.x),pad.t); ctx.lineTo(X(v.x),h-pad.b); ctx.stroke(); ctx.restore(); });
+  (cfg.hlines||[]).forEach(v => { if(v.y<y0||v.y>y1) return; ctx.save(); ctx.setLineDash([3,5]); ctx.strokeStyle = C[v.c||'muted']; ctx.lineWidth=1.2; ctx.beginPath(); ctx.moveTo(pad.l,Y(v.y)); ctx.lineTo(w-pad.r,Y(v.y)); ctx.stroke(); ctx.restore(); });
+  // curves
+  ctx.save(); ctx.beginPath(); ctx.rect(pad.l, pad.t, w-pad.l-pad.r, h-pad.t-pad.b); ctx.clip();
+  const span = y1-y0;
+  (cfg.pieces||[]).forEach(p => {
+    const a = Math.max(p.a, x0), b = Math.min(p.b, x1); if(a>=b) return;
+    ctx.strokeStyle = C[p.c||'acc']; ctx.lineWidth = p.lw || (small?2.4:2.8); ctx.setLineDash(p.dash?[6,5]:[]);
+    ctx.beginPath(); let pen=false; const N = 500;
+    for(let i=0;i<=N;i++){
+      let x = a + (b-a)*i/N; if(i===0 && p.a===a) x = a + (b-a)*1e-6; if(i===N && p.b===b) x = b - (b-a)*1e-6;
+      const y = p.f(x);
+      if(!isFinite(y) || y < y0-3*span || y > y1+3*span){ pen=false; continue; }
+      if(!pen){ ctx.moveTo(X(x),Y(y)); pen=true; } else ctx.lineTo(X(x),Y(y));
+    }
+    ctx.stroke();
+  });
+  ctx.setLineDash([]); ctx.restore();
+  // endpoint dots
+  const dot = (x,y,open,c) => { if(x<x0-1e-9||x>x1+1e-9||y<y0||y>y1) return; ctx.beginPath(); ctx.arc(X(x),Y(y), small?4:5.5, 0, 2*Math.PI); ctx.lineWidth=2.2; ctx.strokeStyle=C[c||'acc']; ctx.fillStyle = open?C.surf:C[c||'acc']; ctx.fill(); ctx.stroke(); };
+  const all = [];
+  (cfg.pieces||[]).forEach(p => {
+    if(p.ca!==undefined && p.ca!==null) all.push({x:p.a, y:p.fa!==undefined?p.fa:p.f(p.a), open:!p.ca, c:p.c});
+    if(p.cb!==undefined && p.cb!==null) all.push({x:p.b, y:p.fb!==undefined?p.fb:p.f(p.b), open:!p.cb, c:p.c});
+  });
+  (cfg.dots||[]).forEach(d => all.push(d));
+  all.sort((u,v) => (v.open?1:0)-(u.open?1:0)).forEach(d => dot(d.x,d.y,d.open,d.c));
+  // marker
+  if(cfg.marker){ const m=cfg.marker; if(isFinite(m.y) && m.y>=y0 && m.y<=y1){ ctx.save(); ctx.strokeStyle=C.ink; ctx.setLineDash([2,4]); ctx.beginPath(); ctx.moveTo(X(m.x),Y(m.y)); ctx.lineTo(X(m.x),Y(Math.max(y0,Math.min(0,y1)))); ctx.stroke(); ctx.restore(); ctx.beginPath(); ctx.arc(X(m.x),Y(m.y),6,0,2*Math.PI); ctx.fillStyle=C.ink; ctx.fill(); } }
+  // labels
+  (cfg.labels||[]).forEach(l => { ctx.fillStyle = C[l.c||'ink']; ctx.font='700 15px "Kalam", cursive'; ctx.textAlign=l.align||'left'; ctx.textBaseline='bottom'; ctx.fillText(l.t, X(l.x), Y(l.y)-6); });
+}
+
+
+
+
+function typeset(el){
+  splitMathIn(el);
+  const go = () => { try{ if(MathJax.typesetClear) MathJax.typesetClear([el]); }catch(e){} return MathJax.typesetPromise([el]).catch(()=>{}); };
+  if(window.MathJax && MathJax.startup && MathJax.startup.promise) MathJax.startup.promise.then(go);
+}
+
+
+/* =================== PIZARRA: datos =================== */
+const R_ = String.raw;
+const PZ = [
+{ id:'parametros', name:'Parámetros en funciones a trozos',
+  reco:['“encuentre c”, “halle a y b”, “la constante”','“para que sea continua”','función con llave { de varios tramos'],
+  receta:[R_`Cada tramo es continuo en su intervalo (polinomio, etc.): <b>solo importan las uniones</b>.`, R_`En cada unión \(x=a\): \(\lim^-\) con el tramo de la izquierda; \(\lim^+\) y \(f(a)\) con el tramo que tiene el “=”.`, R_`Igualar: <b>una ecuación por unión</b>.`, R_`Resolver (lineal, cuadrática o sistema).`, R_`Verificar sustituyendo en ambos lados.`],
+  probs:[
+  { id:'pz-7', src:'Taller · Ej. 7', title:'Un parámetro, una unión',
+    st:R_`\[f(x)=\begin{cases}cx^2+2x,&x\lt2\\x^3-cx,&x\ge2\end{cases}\]Halle \(c\) para que \(f\) sea continua en \(\mathbb R\).`,
+    steps:[
+      {t:R_`Ambos tramos son polinomios: continuos en sus intervalos. <mark>Solo se analiza \(x=2\)</mark>.`, k:R_`Los polinomios nunca dan problema; el peligro está únicamente en la unión.`},
+      {t:R_`Por la izquierda (tramo \(x\lt2\)): \(\lim_{x\to2^-}f=c(2)^2+2(2)=4c+4\).`, k:R_`Para \(x\to a^-\) se usa el tramo con “\(\lt\)”.`},
+      {t:R_`Por la derecha y en el punto (tramo \(x\ge2\)): \(f(2)=\lim_{x\to2^+}f=8-2c\).`, k:R_`El tramo que tiene el “=” da \(f(a)\) y el límite por su lado.`},
+      {t:R_`Igualar: \(4c+4=8-2c\Rightarrow6c=4\Rightarrow c=\frac23\).`},
+      {t:R_`Verificar: \(4\cdot\frac23+4=\frac{20}3\) y \(8-\frac43=\frac{20}3\) ✓.`, w:R_`Respuesta exacta: \(\frac23\), no 0.67.`}],
+    ans:R_`\(c=\dfrac23\)`,
+    g:{x:[-2,4], y:[-6,40], ystep:5, pieces:[{f:x=>(2/3)*x*x+2*x, a:-3, b:2, cb:false, c:'ink'},{f:x=>x**3-(2/3)*x, a:2, b:5, ca:true}], vlines:[{x:2}]} },
+  { id:'pz-8', src:'Taller · Ej. 8', title:'Dos parámetros y un 0/0 escondido',
+    st:R_`\[f(x)=\begin{cases}\frac{x^2-4}{x-2},&x\lt2\\ax^2-bx+3,&2\le x\lt3\\2x-a+b,&x\ge3\end{cases}\]`,
+    steps:[
+      {t:R_`Dos incógnitas y <mark>dos uniones</mark> (\(x=2\), \(x=3\)): saldrá un sistema 2×2.`, k:R_`Cuenta incógnitas y uniones antes de empezar.`},
+      {t:R_`En \(x=2\) por la izquierda sale \(\frac00\): factoriza. \(\lim_{x\to2^-}\frac{(x-2)(x+2)}{x-2}=\lim(x+2)=4\).`, k:R_`Un tramo puede tener \(\frac00\) justo en la unión: simplifica antes de igualar.`},
+      {t:R_`\(f(2)=4a-2b+3\) (tramo medio). Ecuación: \(\boxed{4a-2b=1}\).`},
+      {t:R_`En \(x=3\): \(\lim_{x\to3^-}f=9a-3b+3\); \(f(3)=6-a+b\). Ecuación: \(\boxed{10a-4b=3}\).`},
+      {t:R_`\(2\times\)(1.ª): \(8a-4b=2\). Restar: \(2a=1\Rightarrow a=\frac12\); luego \(b=\frac12\).`},
+      {t:R_`Verificar: tramo medio vale 4 en \(x=2\) y 6 en \(x=3\); último tramo en 3: \(6-\frac12+\frac12=6\) ✓.`}],
+    ans:R_`\(a=b=\dfrac12\)`,
+    g:{x:[-1,5], y:[-1,12], ystep:2, pieces:[{f:x=>x+2, a:-2, b:2, cb:false, fb:4},{f:x=>0.5*x*x-0.5*x+3, a:2, b:3, ca:true, cb:false, c:'ink'},{f:x=>2*x, a:3, b:6, ca:true}], vlines:[{x:2},{x:3}]} },
+  { id:'pz-13', src:'Taller · Ej. 13', title:'La incógnita es el punto de unión',
+    st:R_`\[f(x)=\begin{cases}x+1,&x\le a\\x^2,&x\gt a\end{cases}\]Encuentre <b>todos</b> los valores de \(a\).`,
+    steps:[
+      {t:R_`Aquí no se busca un coeficiente: <mark>se busca dónde cambiar de fórmula</mark>.`, k:R_`Si la incógnita es el punto de unión, iguala ambos tramos evaluados en \(a\).`},
+      {t:R_`\(f(a)=\lim^-=a+1\); \(\lim^+=a^2\). Condición: \(a^2=a+1\iff a^2-a-1=0\).`},
+      {t:R_`\(a=\dfrac{1\pm\sqrt5}{2}\approx1.618\) o \(-0.618\).`, w:R_`“Todos los valores”: las dos raíces sirven.`},
+      {t:R_`Gráficamente: son los cruces de la recta \(y=x+1\) con la parábola \(y=x^2\).`}],
+    ans:R_`\(a=\dfrac{1\pm\sqrt5}{2}\)`,
+    g:{x:[-2,3], y:[-1,7], pieces:[{f:x=>x+1, a:-3, b:4, c:'ink'},{f:x=>x*x, a:-3, b:4}], dots:[{x:1.618,y:2.618},{x:-0.618,y:0.382}]} },
+  { id:'pz-17', src:'Taller · Ej. 17', title:'El parámetro está en los puntos de unión',
+    st:R_`\[w(x)=\begin{cases}1000\left(1-\frac{2x}{L}\right),&0\lt x\le\frac L2\\0,&\frac L2\lt x\le\frac{3L}4\\500\left(2-\frac43Lx\right),&\frac{3L}4\lt x\le L\end{cases}\]¿Qué \(L\) hace continua la carga?`,
+    steps:[
+      {t:R_`Las uniones son \(x=\frac L2\) y \(x=\frac{3L}4\).`, k:R_`Los puntos de unión dependen de \(L\): evalúa en \(\frac L2\) y \(\frac{3L}4\), no en números fijos.`},
+      {t:R_`En \(\frac L2\): \(1000(1-1)=0\) y el siguiente tramo vale 0 ✓ (para cualquier \(L\)).`},
+      {t:R_`En \(\frac{3L}4\): \(w=0\) y \(\lim^+=500\left(2-\frac43L\cdot\frac{3L}4\right)=500(2-L^2)\).`},
+      {t:R_`\(500(2-L^2)=0\Rightarrow L=\sqrt2\).`, w:R_`Descarta \(-\sqrt2\): una longitud es positiva. Dilo por escrito.`}],
+    ans:R_`\(L=\sqrt2\approx1.41\)`,
+    g:{x:[0,1.5], y:[-1100,1100], ystep:500, xstep:0.25, pieces:[{f:x=>1000*(1-2*x/Math.SQRT2), a:0, b:Math.SQRT2/2, cb:true},{f:()=>0, a:Math.SQRT2/2, b:0.75*Math.SQRT2, cb:true, c:'ink'},{f:x=>500*(2-(4/3)*Math.SQRT2*x), a:0.75*Math.SQRT2, b:Math.SQRT2, cb:true}]} },
+  { id:'pz-19', src:'Taller · Ej. 19', title:'Más incógnitas que uniones',
+    st:R_`\[T(t)=\begin{cases}2t^3-9t^2+12t+k,&t\lt3\\at^2+bt+c,&3\le t\le5\\60+\frac{40}t,&t\gt5\end{cases}\]Reescriba la función para que sea continua.`,
+    steps:[
+      {t:R_`En \(t=3\): \(9+k=9a+3b+c\). En \(t=5\): \(25a+5b+c=68\).`},
+      {t:R_`<mark>4 incógnitas, 2 ecuaciones</mark>: hay infinitas soluciones.`, k:R_`Si hay más incógnitas que uniones, despeja en función de las libres y da un ejemplo concreto.`},
+      {t:R_`Despejando: \(c=68-25a-5b\), \(k=59-16a-2b\).`},
+      {t:R_`Ejemplo simple \(a=b=0\): \(c=68\), \(k=59\) (temperatura constante de 68 °C entre las horas 3 y 5).`, w:R_`No digas “no tiene solución”: tiene infinitas.`}],
+    ans:R_`\(c=68-25a-5b,\ k=59-16a-2b\); p. ej. \(a=b=0,\ c=68,\ k=59\)`,
+    g:{x:[0,12], y:[40,90], ystep:10, xstep:1, pieces:[{f:t=>2*t**3-9*t*t+12*t+59, a:0, b:3, ca:true, cb:false},{f:()=>68, a:3, b:5, ca:true, cb:true, c:'ink'},{f:t=>60+40/t, a:5, b:13, ca:false}], hlines:[{y:60}]} }
+  ]},
+
+{ id:'redefinir', name:'Encontrar, clasificar y redefinir',
+  reco:['“¿dónde es discontinua?”','“redefina” / “elimine la discontinuidad”','fracción que da \\(\\frac00\\)'],
+  receta:[R_`Candidatos: ceros del denominador, uniones, puntos sueltos.`, R_`Calcula el límite (factorizar / conjugado / expandir).`, R_`Límite finito ⇒ <b>evitable</b> ⇒ \(F(a)=L\).`, R_`Laterales distintos o \(\pm\infty\) ⇒ <b>no se puede</b> eliminar.`, R_`Concluye con el intervalo donde \(F\) es continua.`],
+  probs:[
+  { id:'pz-10', src:'Taller · Ej. 10a', title:'Un punto se arregla, el otro no',
+    st:R_`\[f(x)=\frac{x-3}{x^2-9}\]`,
+    steps:[
+      {t:R_`Candidatos: \(x^2-9=0\iff x=\pm3\).`},
+      {t:R_`Factoriza: \(\frac{x-3}{(x-3)(x+3)}=\frac1{x+3}\) para \(x\neq\pm3\).`, k:R_`Si el factor <b>se cancela</b> ⇒ evitable. Si <b>queda en el denominador</b> ⇒ infinita.`},
+      {t:R_`\(x=3\): \(\lim=\frac16\) ⇒ evitable; se redefine \(F(3)=\frac16\).`},
+      {t:R_`\(x=-3\): \(\lim^\pm=\pm\infty\) ⇒ infinita (asíntota).`, w:R_`No se puede hacer continua en todo \(\mathbb R\). Hay que decirlo.`}],
+    ans:R_`Evitable en 3 (\(F(3)=\frac16\)); infinita en \(-3\)`,
+    g:{x:[-7,6], y:[-3,3], pieces:[{f:x=>1/(x+3), a:-8, b:-3},{f:x=>1/(x+3), a:-3, b:7}], vlines:[{x:-3, c:'warn'}], dots:[{x:3,y:1/6,open:true}]} },
+  { id:'pz-11', src:'Taller · Ej. 11', title:'Raíz y 0/0: el conjugado',
+    st:R_`\[f(x)=\frac{x-1}{\sqrt x-1}\]`,
+    steps:[
+      {t:R_`Dominio: \(x\ge0\), \(x\neq1\). En \(x=1\) sale \(\frac00\).`},
+      {t:R_`Multiplica por \(\sqrt x+1\): \(\frac{(x-1)(\sqrt x+1)}{x-1}=\sqrt x+1\).`, k:R_`Raíz + \(\frac00\) ⇒ conjugado (o cambio \(u=\sqrt x\)).`},
+      {t:R_`\(\lim_{x\to1}=2\) ⇒ evitable; \(F(x)=\sqrt x+1\), \(x\ge0\).`, w:R_`Para \(x\lt0\) no existe: no puede ser continua en todo \(\mathbb R\).`}],
+    ans:R_`\(F(x)=\sqrt x+1\) en \([0,\infty)\)`,
+    g:{x:[-1,6], y:[-0.5,4], pieces:[{f:x=>Math.sqrt(x)+1, a:0, b:7, ca:true}], dots:[{x:1,y:2,open:true}]} },
+  { id:'pz-15', src:'Taller · Ej. 15', title:'El límite no coincide con el valor',
+    st:R_`\[g(h)=\begin{cases}\frac{(1+h)^3-1}{h},&h\neq0\\0,&h=0\end{cases}\]`,
+    steps:[
+      {t:R_`Expande: \((1+h)^3=1+3h+3h^2+h^3\) ⇒ \(\frac{3h+3h^2+h^3}h=3+3h+h^2\).`, w:R_`\((1+h)^3\neq1+h^3\).`},
+      {t:R_`\(\lim_{h\to0}g=3\), pero \(g(0)=0\).`, k:R_`Límite existe pero \(\neq\) valor ⇒ falla la condición 3 ⇒ evitable.`},
+      {t:R_`Se corrige con \(g(0)=3\).`}],
+    ans:R_`No es continua; redefinir \(g(0)=3\)`,
+    g:{x:[-3,2], y:[-1,10], pieces:[{f:h=>3+3*h+h*h, a:-4, b:3}], dots:[{x:0,y:3,open:true},{x:0,y:0,c:'warn'}]} }
+  ]},
+
+{ id:'intervalos', name:'Intervalos y demostraciones',
+  reco:['“¿en qué intervalo es continua?”','“demuestre que es continua en…”','raíces, logaritmos, fracciones'],
+  receta:[R_`Escribe las condiciones de cada pieza: raíz \(\ge0\), \(\ln\gt0\), denominador \(\neq0\).`, R_`Resuelve e intersecta.`, R_`Justifica con teoremas (producto, composición).`, R_`Demostración: leyes de límites en el interior + límite lateral en los bordes.`],
+  probs:[
+  { id:'pz-12', src:'Taller · Ej. 12', title:'Logaritmo: intervalo abierto',
+    st:R_`\(L(v)=v\ln(1-v^2)\) y \(f(t)=e^{-t^2}\ln(1+t^2)\)`,
+    steps:[
+      {t:R_`\(L\): \(1-v^2\gt0\iff-1\lt v\lt1\).`, k:R_`Logaritmo ⇒ desigualdad <b>estricta</b> ⇒ paréntesis.`},
+      {t:R_`Producto de continuas en \((-1,1)\) ⇒ \(L\) continua en \((-1,1)\).`, w:R_`\([-1,1]\) está mal: \(\ln0\) no existe.`},
+      {t:R_`\(f\): \(1+t^2\ge1\gt0\) siempre ⇒ continua en \(\mathbb R\).`}],
+    ans:R_`\(L\): \((-1,1)\); \(f\): \(\mathbb R\)`,
+    g:{x:[-1.5,1.5], y:[-3,3], xstep:0.5, pieces:[{f:v=>v*Math.log(1-v*v), a:-1, b:1}], shade:[[-1,1]], vlines:[{x:-1,c:'warn'},{x:1,c:'warn'}]} },
+  { id:'pz-4', src:'Taller · Ej. 4a', title:'Demostrar continuidad con borde',
+    st:R_`Demuestre que \(f(x)=x+\sqrt{x-4}\) es continua en \([4,\infty)\).`,
+    steps:[
+      {t:R_`Dominio: \(x\ge4\).`},
+      {t:R_`\(a\gt4\): \(\lim_{x\to a}(x+\sqrt{x-4})=a+\sqrt{a-4}=f(a)\) (leyes de suma y raíz).`},
+      {t:R_`\(a=4\): \(\lim_{x\to4^+}f=4+0=4=f(4)\).`, k:R_`En el borde de una raíz solo existe el límite <b>lateral</b>: no pidas el bilateral.`},
+      {t:R_`Conclusión: continua en \([4,\infty)\). ∎`}],
+    ans:R_`Continua en \([4,\infty)\)`,
+    g:{x:[2,14], y:[0,18], xstep:2, ystep:2, pieces:[{f:x=>x+Math.sqrt(x-4), a:4, b:15, ca:true}]} }
+  ]},
+
+{ id:'epsdelta', name:'ε–δ con tolerancias',
+  reco:['“tolerancia”, “±”, “error permitido”','“¿con qué precisión…?”','“definición formal”, “valor de δ”'],
+  receta:[R_`Identifica <b>entrada</b> \(x\) y <b>salida</b> \(f(x)\).`, R_`\(L\) = valor deseado; \(\varepsilon\) = tolerancia de la salida (si es %, conviértela).`, R_`Halla \(x_0\) resolviendo \(f(x_0)=L\).`, R_`Escribe \(\lim_{x\to x_0}f(x)=L\) y tradúcelo.`, R_`Resuelve \(L-\varepsilon\lt f(x)\lt L+\varepsilon\) ⇒ intervalo de \(x\).`, R_`\(\delta\) = <b>menor</b> distancia de \(x_0\) a los extremos.`],
+  probs:[
+  { id:'pz-disco', src:'Prueba 2 · Ej. 2', title:'Discos de 1000 cm² ± 5 %',
+    st:R_`Área requerida 1000 cm², tolerancia ±5 %. a) Límite. b) Traducción. c) ε–δ en contexto; valores de \(\delta\) y \(\varepsilon\).`,
+    steps:[
+      {t:R_`Entrada: radio \(r\). Salida: área \(A(r)=\pi r^2\).`, k:R_`\(\varepsilon\) es la tolerancia de lo que se <b>mide</b> (área); \(\delta\), de lo que se <b>controla</b> (radio).`},
+      {t:R_`\(\pi r_0^2=1000\Rightarrow r_0=\sqrt{1000/\pi}\approx17.841\) cm.`},
+      {t:R_`a) \(\lim_{r\to\sqrt{1000/\pi}}\pi r^2=1000\). b) “Si el radio se acerca a 17.84 cm, el área se acerca a 1000 cm².”`},
+      {t:R_`c) \(\forall\varepsilon\gt0\ \exists\delta\gt0:\ |r-r_0|\lt\delta\Rightarrow|\pi r^2-1000|\lt\varepsilon\).`},
+      {t:R_`\(\varepsilon=5\%\cdot1000=50\) cm².`, w:R_`\(\varepsilon=50\) cm², no 5.`},
+      {t:R_`\(950\lt\pi r^2\lt1050\iff17.3895\lt r\lt18.2818\).`},
+      {t:R_`Distancias: \(0.4517\) y \(0.4406\) ⇒ \(\delta=0.44\) cm.`, k:R_`Se toma la <b>menor</b> para que todo el intervalo simétrico quede dentro de la tolerancia.`}],
+    ans:R_`\(\varepsilon=50\) cm², \(\delta\approx0.44\) cm`,
+    g:{x:[16.9,18.8], y:[880,1120], xstep:0.25, ystep:40, shade:[{a:17.841-0.4406, b:17.841+0.4406, c:'grid'}], hband:[{a:950,b:1050}], pieces:[{f:r=>Math.PI*r*r, a:16, b:20}], hlines:[{y:950,c:'acc'},{y:1050,c:'acc'}]} },
+  { id:'pz-horno', src:'Taller · Horno', title:'Horno a 200 °C ± 1 °C',
+    st:R_`\(T(p)=0.1p^2+2.155p+20\). Queremos \(T\to200\) con variación de ±1 °C. ¿Cuál es \(\delta\)?`,
+    steps:[
+      {t:R_`Entrada \(p\) (W), salida \(T\) (°C). \(L=200\), \(\varepsilon=1\).`},
+      {t:R_`\(p^2+21.55p-1800=0\Rightarrow p_0=\frac{-21.55+\sqrt{7664.4}}2\approx32.998\) W.`, k:R_`Primero hay que encontrar \(p_0\): sin él no se puede escribir el límite.`},
+      {t:R_`\(\lim_{p\to32.998}T(p)=200\).`},
+      {t:R_`\(T=199\Rightarrow p=32.8839\); \(T=201\Rightarrow p=33.1124\).`},
+      {t:R_`Distancias: \(0.1144\) y \(0.1141\) ⇒ \(\delta=0.114\) W.`, w:R_`No confundas: \(\varepsilon\) en °C, \(\delta\) en W.`}],
+    ans:R_`\(\delta\approx0.114\) W`,
+    g:{x:[32.6,33.4], y:[196,204], xstep:0.1, ystep:1, shade:[{a:32.998-0.114, b:32.998+0.114, c:'grid'}], hband:[{a:199,b:201}], pieces:[{f:p=>0.1*p*p+2.155*p+20, a:32, b:34}], hlines:[{y:199,c:'acc'},{y:201,c:'acc'}]} },
+  { id:'pz-pendulo', src:'Ejemplo nuevo', title:'Péndulo de 2 s ± 0.01 s',
+    st:R_`\(T(L)=2\pi\sqrt{L/9.8}\). Se necesita \(T=2\) s con tolerancia ±0.01 s. Halle \(\delta\) para \(L\).`,
+    steps:[
+      {t:R_`\(L_0=9.8/\pi^2\approx0.99295\) m.`},
+      {t:R_`\(1.99\lt T\lt2.01\iff0.98304\lt L\lt1.00290\).`, k:R_`Despeja la variable de entrada en cada extremo: \(L=9.8\left(\frac{T}{2\pi}\right)^2\).`},
+      {t:R_`Distancias \(0.00990\) y \(0.00995\) ⇒ \(\delta=0.0099\) m ≈ 1 cm.`}],
+    ans:R_`\(\delta\approx0.0099\) m`,
+    g:{x:[0.95,1.04], y:[1.96,2.04], xstep:0.01, ystep:0.01, shade:[{a:0.99295-0.0099, b:0.99295+0.0099, c:'grid'}], hband:[{a:1.99,b:2.01}], pieces:[{f:L=>2*Math.PI*Math.sqrt(L/9.8), a:0.9, b:1.1}], hlines:[{y:1.99,c:'acc'},{y:2.01,c:'acc'}]} }
+  ]},
+
+{ id:'geometria', name:'Modelar geometría (“más cercano”)',
+  reco:['una figura: piscina, cuadrado, pista','“distancia al más cercano”','“en función del desplazamiento”'],
+  receta:[R_`Dibuja y pon ejes con el origen en la salida.`, R_`Nombra las constantes (lado \(=a\)) y la variable (\(x\)).`, R_`Escribe la posición en función de \(x\).`, R_`“Más cercano” = mínimo ⇒ tramos; el cambio ocurre donde las distancias se igualan.`, R_`Analiza la unión e <b>interpreta</b>.`],
+  probs:[
+  { id:'pz-piscina-a', src:'Prueba 2 · Ej. 1a', title:'Piscina: distancia entre lados',
+    st:R_`Nadador de una esquina al borde largo opuesto, a distancia horizontal \(2a\) (\(a\) = lado corto). Distancia vertical desde el lado largo más cercano al nadador hasta el lado largo de partida.`,
+    steps:[
+      {t:R_`Ejes: salida \((0,0)\), llegada \((2a,a)\). Trayectoria \(y=\frac x2\), \(x\in[0,2a]\).`, k:R_`Siempre empieza dibujando con ejes y escribiendo el dominio.`},
+      {t:R_`Lado más cercano: abajo si \(x\lt a\); arriba si \(x\gt a\) (se igualan en \(x=a\)).`},
+      {t:R_`Distancia de ese lado al de partida: \(D(x)=\begin{cases}0,&0\le x\lt a\\a,&a\lt x\le2a\end{cases}\)`, w:R_`Es la distancia entre <b>dos lados</b>, no entre el nadador y un lado.`},
+      {t:R_`\(\lim_{x\to a^-}D=0\neq a=\lim_{x\to a^+}D\) ⇒ <mark>salto en \(x=a\)</mark>.`, k:R_`Interpretación: a mitad del recorrido el lado más cercano cambia de golpe.`}],
+    ans:R_`Discontinuidad de salto en \(x=a\)`,
+    g:{x:[0,2], y:[-0.2,1.2], xstep:0.25, ystep:0.25, pieces:[{f:()=>0, a:0, b:1, ca:true, cb:false},{f:()=>1, a:1, b:2, ca:false, cb:true}], vlines:[{x:1}]} },
+  { id:'pz-piscina-b', src:'Prueba 2 · Ej. 1b', title:'Piscina: distancia del nadador al borde',
+    st:R_`Distancia vertical del nadador al borde largo más cercano, en función del desplazamiento horizontal.`,
+    steps:[
+      {t:R_`Distancias: al de abajo \(\frac x2\); al de arriba \(a-\frac x2\).`},
+      {t:R_`Más cercano = menor: \(d(x)=\min\left(\frac x2,a-\frac x2\right)=\begin{cases}\frac x2,&0\le x\le a\\a-\frac x2,&a\lt x\le2a\end{cases}\)`, k:R_`“Más cercano” se traduce en un <b>mínimo</b>, y el mínimo se escribe a trozos.`},
+      {t:R_`En \(x=a\): \(\frac a2\) por ambos lados ⇒ continua en \([0,2a]\).`},
+      {t:R_`Interpretación: el nadador se mueve sin saltar ⇒ su distancia tampoco salta. Máximo \(\frac a2\) en el centro.`, w:R_`Un “pico” (esquina) no es una discontinuidad.`}],
+    ans:R_`Continua en \([0,2a]\)`,
+    g:{x:[0,2], y:[-0.1,0.7], xstep:0.25, ystep:0.1, pieces:[{f:x=>x/2, a:0, b:1, ca:true},{f:x=>1-x/2, a:1, b:2, cb:true}]} },
+  { id:'pz-hormiga', src:'Ejemplo nuevo', title:'La hormiga en el cuadrado',
+    st:R_`Una hormiga recorre el borde de un cuadrado de lado 1 desde \(O(0,0)\) en sentido antihorario. \(s\) = distancia recorrida. Distancia en línea recta a \(O\) en función de \(s\).`,
+    steps:[
+      {t:R_`Cada lado es un tramo: \(s\in[0,1],[1,2],[2,3],[3,4]\).`, k:R_`En un recorrido por un polígono, <b>cada lado es un tramo</b> y cada vértice una unión.`},
+      {t:R_`Posiciones: \((s,0)\), \((1,s-1)\), \((3-s,1)\), \((0,4-s)\).`},
+      {t:R_`Pitágoras: \(d=s,\ \sqrt{1+(s-1)^2},\ \sqrt{(3-s)^2+1},\ 4-s\).`},
+      {t:R_`Uniones: \(s=1\): 1 y 1; \(s=2\): \(\sqrt2\) y \(\sqrt2\); \(s=3\): 1 y 1 ⇒ continua en \([0,4]\).`}],
+    ans:R_`Continua en \([0,4]\); máximo \(\sqrt2\) en \(s=2\)`,
+    g:{x:[0,4], y:[0,1.6], xstep:0.5, ystep:0.25, pieces:[{f:s=>s, a:0, b:1},{f:s=>Math.sqrt(1+(s-1)**2), a:1, b:2},{f:s=>Math.sqrt((3-s)**2+1), a:2, b:3},{f:s=>4-s, a:3, b:4}], vlines:[{x:1},{x:2},{x:3}]} }
+  ]},
+
+{ id:'composicion', name:'Composición (área, volumen, costo)',
+  reco:['dan \\(r(t)\\) a trozos','preguntan por área, volumen o costo','“analice la continuidad del área”'],
+  receta:[R_`Escribe la magnitud pedida: \(A=\pi r^2\), \(V=\frac43\pi r^3\)…`, R_`Revisa la continuidad de \(r\) en las uniones.`, R_`Composición de continuas ⇒ continua.`, R_`Cuida el dominio (tiempo \(\ge0\)).`],
+  probs:[
+  { id:'pz-mancha', src:'Prueba 2 · Ej. 3', title:'Mancha de aceite',
+    st:R_`\[r(t)=\begin{cases}4t^2+20,&0\le t\le2\\16t+4,&t\gt2\end{cases}\]Analice la continuidad del área en todos los reales.`,
+    steps:[
+      {t:R_`\(A(t)=\pi r(t)^2\).`},
+      {t:R_`\(r(2)=36\) y \(\lim_{t\to2^+}r=36\) ⇒ \(r\) continua.`, k:R_`Si \(r\) es continua, \(A=\pi r^2\) también (composición): basta revisar \(r\).`},
+      {t:R_`\(A(2)=1296\pi\) por ambos lados; en \(t=0\), continua por la derecha.`},
+      {t:R_`\(A\) es continua en \([0,\infty)\).`, w:R_`“En todos los reales”: para \(t\lt0\) no está definida. Dilo y explica por qué.`}],
+    ans:R_`Continua en \([0,\infty)\), su dominio`,
+    g:{x:[-1,4], y:[0,5000], ystep:1000, xstep:0.5, pieces:[{f:t=>(4*t*t+20)**2, a:0, b:2, ca:true},{f:t=>(16*t+4)**2, a:2, b:5, c:'ink'}], vlines:[{x:0,c:'warn'},{x:2}]} },
+  { id:'pz-globo', src:'Ejemplo nuevo', title:'Globo con parámetro',
+    st:R_`\(r(t)=\begin{cases}2t+1,&0\le t\le3\\kt-2,&t\gt3\end{cases}\). Halle \(k\) para que el volumen sea continuo.`,
+    steps:[
+      {t:R_`\(V=\frac43\pi r^3\) es continua si \(r\) lo es.`, k:R_`El parámetro se halla con \(r\), no con \(V\): ahorra álgebra.`},
+      {t:R_`\(r(3)=7=3k-2\Rightarrow k=3\).`},
+      {t:R_`\(V\) continua en \([0,\infty)\).`}],
+    ans:R_`\(k=3\)`,
+    g:{x:[0,6], y:[0,20], xstep:1, ystep:4, pieces:[{f:t=>2*t+1, a:0, b:3, ca:true, cb:true},{f:t=>3*t-2, a:3, b:7, c:'ink'}]} }
+  ]},
+
+{ id:'tarifas', name:'Tarifas y funciones escalón',
+  reco:['precios por hora, kWh, impuestos','“los primeros…, los siguientes…”','“horas pico”'],
+  receta:[R_`Escribe un tramo por cada tarifa, con el “=” bien puesto.`, R_`En cada cambio, compara los laterales.`, R_`Escalón ⇒ salto; tarifa por excedente ⇒ continua.`, R_`Interpreta qué significa el salto para el usuario.`],
+  probs:[
+  { id:'pz-peaje', src:'Taller · Ej. 5', title:'Peaje en horas pico',
+    st:R_`1 dólar todo el día; 2 dólares de 7–10 am y de 4–7 pm. Modele y halle las discontinuidades.`,
+    steps:[
+      {t:R_`4 pm = 16, 7 pm = 19. \(C(t)=1\) salvo \(7\le t\lt10\) y \(16\le t\lt19\), donde vale 2.`, k:R_`Pasa las horas a reloj de 24 h antes de escribir los tramos.`},
+      {t:R_`\(t=7\): \(\lim^-=1\neq2=\lim^+\) ⇒ salto. Igual en 10, 16, 19.`},
+      {t:R_`Saltos de 1 dólar en \(t=7,10,16,19\).`, w:R_`El “\(\le\)” o “\(\lt\)” cambia \(C\) en el punto, pero no la discontinuidad.`}],
+    ans:R_`Discontinua en \(t=7,10,16,19\)`,
+    g:{x:[0,24], y:[0,2.6], xstep:2, ystep:0.5, pieces:[[0,7,1],[7,10,2],[10,16,1],[16,19,2],[19,24,1]].map(([a,b,v],i)=>({f:()=>v, a, b, ca:true, cb:i===4?null:false}))} },
+  { id:'pz-luz', src:'Ejemplo nuevo', title:'Planilla de luz: dos sistemas',
+    st:R_`A) 0.09 $/kWh los primeros 100 kWh y 0.10 $ los adicionales. B) Hasta 100 kWh a 0.09 $; si pasa de 100, <b>todo</b> a 0.10 $.`,
+    steps:[
+      {t:R_`A) \[C_A=\begin{cases}0.09x,&x\le100\\9+0.10(x-100),&x\gt100\end{cases}\] En 100: 9 y 9 ⇒ continua.`, k:R_`“Los adicionales” ⇒ se suma a lo ya pagado ⇒ continua.`},
+      {t:R_`B) \[C_B=\begin{cases}0.09x,&x\le100\\0.10x,&x\gt100\end{cases}\] En 100: 9 y 10 ⇒ salto de 1 $.`, k:R_`“Todo a la nueva tarifa” ⇒ salto.`},
+      {t:R_`Interpretación: en B, gastar 0.1 kWh de más cuesta casi 1 $ extra; por eso las tarifas reales son como A.`}],
+    ans:R_`A continua; B con salto en \(x=100\)`,
+    g:{x:[60,140], y:[5,15], xstep:10, ystep:1, pieces:[{f:x=>0.09*x, a:50, b:100, cb:true},{f:x=>9+0.1*(x-100), a:100, b:150},{f:x=>0.1*x, a:100, b:150, ca:false, c:'warn'}]} }
+  ]},
+
+{ id:'fisica', name:'Física: constantes e interpretación de límites',
+  reco:['dentro/fuera, antes/después','“determine la constante para que sea continua”','“¿qué ocurre cuando… se acerca a…?”'],
+  receta:[R_`Identifica dónde cambia el modelo (superficie, instante).`, R_`Iguala los tramos ahí (las magnitudes físicas no saltan).`, R_`Para límites: sustituye; si sale \(\frac k0\), analiza signos.`, R_`Interpreta con unidades y respeta el dominio físico.`],
+  probs:[
+  { id:'pz-grav', src:'Taller · Ej. 6', title:'Gravedad dentro y fuera de la Tierra',
+    st:R_`\(F(r)=\frac{GMr}{R^3}\) si \(r\lt R\); \(\frac{GM}{r^2}\) si \(r\ge R\). ¿Es continua?`,
+    steps:[
+      {t:R_`Tramos: lineal y racional con \(r\gt0\) ⇒ continuos.`},
+      {t:R_`\(r=R\): \(\frac{GMR}{R^3}=\frac{GM}{R^2}\) y \(\frac{GM}{R^2}\) ⇒ continua.`, k:R_`Que haya dos fórmulas no significa que sea discontinua: lo decide la unión.`},
+      {t:R_`Interpretación: máxima en la superficie.`}],
+    ans:R_`Continua en \([0,\infty)\)`,
+    g:{x:[0,4], y:[0,1.2], xstep:0.5, ystep:0.25, pieces:[{f:u=>u, a:0, b:1, ca:true},{f:u=>1/(u*u), a:1, b:4}], vlines:[{x:1}]} },
+  { id:'pz-charles', src:'Taller · Ej. 1 y 18', title:'Cero absoluto',
+    st:R_`\(V(T)=V_0\left(1+\frac T{273}\right)\). ¿Qué pasa cuando \(T\to-273\)? Interprete los laterales.`,
+    steps:[
+      {t:R_`Lineal ⇒ sustitución: \(V_0(1-1)=0\).`},
+      {t:R_`Por la derecha: 0, con sentido físico.`, k:R_`Respeta el <b>dominio físico</b>: para \(T\lt-273\) el volumen sería negativo.`},
+      {t:R_`Por la izquierda: no tiene sentido físico (no existen esas temperaturas).`},
+      {t:R_`−273 °C = 0 K es el cero absoluto.`}],
+    ans:R_`\(\lim_{T\to-273^+}V=0\)`,
+    g:{x:[-320,110], y:[-0.3,1.5], xstep:50, ystep:0.25, pieces:[{f:t=>1+t/273, a:-320, b:-273, c:'warn', dash:true},{f:t=>1+t/273, a:-273, b:110, ca:true}]} },
+  { id:'pz-masa', src:'Ejemplo nuevo', title:'Masa relativista',
+    st:R_`\(m(v)=\dfrac{m_0}{\sqrt{1-v^2/c^2}}\). Calcule \(\lim_{v\to c^-}m(v)\) e interprete.`,
+    steps:[
+      {t:R_`Dominio \(|v|\lt c\) ⇒ solo el lateral izquierdo en \(v=c\).`},
+      {t:R_`Sustituye: \(\frac{m_0}{\sqrt{0^+}}=\frac{m_0}{0^+}=+\infty\).`, k:R_`\(\frac{k}{0^+}\) con \(k\gt0\) ⇒ \(+\infty\): asíntota vertical.`},
+      {t:R_`Ninguna partícula con masa alcanza \(c\) (haría falta energía infinita).`}],
+    ans:R_`\(+\infty\)`,
+    g:{x:[0,1.05], y:[0,8], xstep:0.25, ystep:1, pieces:[{f:v=>1/Math.sqrt(1-v*v), a:0, b:0.9999}], vlines:[{x:1,c:'warn'}]} },
+  { id:'pz-esfera', src:'Ejemplo nuevo', title:'Potencial de una esfera',
+    st:R_`\(V(r)=A-\frac{kQr^2}{2R^3}\) si \(r\lt R\); \(\frac{kQ}{r}\) si \(r\ge R\). Halle \(A\).`,
+    steps:[
+      {t:R_`\(\lim_{r\to R^-}V=A-\frac{kQ}{2R}\); \(V(R)=\frac{kQ}R\).`},
+      {t:R_`\(A=\frac{3kQ}{2R}\).`, k:R_`Las magnitudes físicas (potencial, temperatura, radio) no saltan: eso justifica pedir continuidad.`}],
+    ans:R_`\(A=\dfrac{3kQ}{2R}\)`,
+    g:{x:[0,4], y:[0,1.7], xstep:0.5, ystep:0.25, pieces:[{f:u=>1.5-u*u/2, a:0, b:1, ca:true},{f:u=>1/u, a:1, b:4}], vlines:[{x:1}]} }
+  ]},
+
+{ id:'tvi', name:'Teorema del Valor Intermedio',
+  reco:['“demuestre que en algún momento…”','“existe un instante / una raíz…”'],
+  receta:[R_`Justifica que \(f\) es <b>continua</b> en \([a,b]\).`, R_`Evalúa \(f(a)\) y \(f(b)\).`, R_`Comprueba que el valor buscado está entre ellos (o cambio de signo).`, R_`Concluye: existe \(c\in(a,b)\).`],
+  probs:[
+  { id:'pz-tvi', src:'Ejemplo nuevo', title:'Raíz por Bolzano',
+    st:R_`Demuestre que \(x^3-4x+1=0\) tiene una raíz en \((0,1)\).`,
+    steps:[
+      {t:R_`\(f(x)=x^3-4x+1\) es polinomio ⇒ continua en \([0,1]\).`, k:R_`Sin escribir la continuidad, el teorema no se puede aplicar.`},
+      {t:R_`\(f(0)=1\gt0\), \(f(1)=-2\lt0\).`},
+      {t:R_`Cambio de signo ⇒ existe \(c\in(0,1)\) con \(f(c)=0\). ∎`}],
+    ans:R_`Existe una raíz en \((0,1)\)`,
+    g:{x:[-0.5,1.5], y:[-3,2], xstep:0.25, ystep:1, pieces:[{f:x=>x**3-4*x+1, a:-1, b:2}], shade:[[0,1]], dots:[{x:0,y:1},{x:1,y:-2,c:'warn'}]} }
+  ]}
+];
+
+
+/* =================== CUADERNO: datos nuevos =================== */
+const RF = (id, txt) => `<a class="ref" href="#${id}" data-go="${id}">${txt}</a>`;
+const TYPES = {
+  demo:{ name:'Demostración', reco:['“demuestre que… es continua”','“justifique”, “¿por qué?”','teoremas que usas en otros ejercicios'],
+    receta:[R_`Para continuidad en \(a\): hay que probar \(\lim_{x\to a}f(x)=f(a)\).`, R_`Con ε–δ: parte de \(|f(x)-f(a)|\) y escríbelo como \(|x-a|\cdot(\text{algo acotado})\).`, R_`Acota ese “algo” por una constante \(K\) cerca de \(a\).`, R_`Elige \(\delta=\min\{\ldots,\ \varepsilon/K\}\) y verifica.`, R_`Si ya está probado un teorema (suma, producto, composición), úsalo en vez de repetir ε–δ.`] }
+};
+// tipos heredados de la pizarra
+PZ.forEach(T => { TYPES[T.id] = { name:T.name, reco:T.reco, receta:T.receta }; T.probs.forEach(P => { P.type = T.id; }); });
+const OLD = {}; PZ.forEach(T => T.probs.forEach(P => { OLD[P.id] = P; }));
+const ext = (id, patch) => Object.assign({}, OLD[id], patch);
+
+/* ---------- Capítulo 0: demostraciones ---------- */
+const DEMOS = [
+{ id:'d-cte', type:'demo', src:'Demostración D1', title:'Constantes y la identidad son continuas',
+  st:R_`Demuestre que \(f(x)=c\) y \(g(x)=x\) son continuas en todo \(a\in\mathbb R\).`,
+  steps:[
+    {t:R_`Hay que probar: \(\lim_{x\to a}c=c\) y \(\lim_{x\to a}x=a\) con la definición ε–δ.`, k:R_`Continuidad en \(a\) = probar \(\lim_{x\to a}f(x)=f(a)\). Nada más.`},
+    {t:R_`Constante: \(|f(x)-f(a)|=|c-c|=0\lt\varepsilon\) para cualquier \(x\). <mark>Cualquier \(\delta\) sirve.</mark>`},
+    {t:R_`Identidad: \(|g(x)-g(a)|=|x-a|\). Si tomamos \(\delta=\varepsilon\): \(|x-a|\lt\delta\Rightarrow|x-a|\lt\varepsilon\) ✓.`, k:R_`Cuando \(|f(x)-f(a)|=|x-a|\), basta \(\delta=\varepsilon\).`},
+    {t:R_`Conclusión: \(c\) y \(x\) son continuas en \(\mathbb R\). Son los “ladrillos” con los que se construyen todos los polinomios. ∎`}],
+  ans:R_`\(\lim_{x\to a}c=c\), \(\lim_{x\to a}x=a\)` },
+
+{ id:'d-leyes', type:'demo', src:'Demostración D2', title:'Leyes de suma y producto ⇒ los polinomios son continuos',
+  st:R_`Si \(\lim f=L\) y \(\lim g=M\) cuando \(x\to a\), demuestre que \(\lim(f+g)=L+M\) y \(\lim fg=LM\). Concluya que todo polinomio es continuo en \(\mathbb R\).`,
+  steps:[
+    {t:R_`<b>Suma.</b> \(|(f+g)-(L+M)|\le|f-L|+|g-M|\) (desigualdad triangular).`, k:R_`La desigualdad triangular \(|u+v|\le|u|+|v|\) es la herramienta básica de las demostraciones ε–δ.`},
+    {t:R_`Elige \(\delta_1\) con \(|f-L|\lt\frac\varepsilon2\) y \(\delta_2\) con \(|g-M|\lt\frac\varepsilon2\). Con \(\delta=\min\{\delta_1,\delta_2\}\) la suma es \(\lt\varepsilon\) ✓.`, k:R_`Truco del \(\frac\varepsilon2\): repartes el error entre las dos partes.`},
+    {t:R_`<b>Producto.</b> Suma y resta \(fM\): \(fg-LM=f(g-M)+M(f-L)\).`},
+    {t:R_`Cerca de \(a\), \(f\) está acotada: \(|f|\lt|L|+1\). Entonces \(|fg-LM|\le(|L|+1)|g-M|+|M||f-L|\), y cada parte se hace \(\lt\frac\varepsilon2\) acercándose a \(a\) ✓.`},
+    {t:R_`<b>Polinomios.</b> \(x^n=x\cdot x\cdots x\): producto de identidades (${RF('d-cte','D1')}) ⇒ continua. \(c\,x^n\): producto con constante. Un polinomio es suma de esos términos ⇒ continuo en \(\mathbb R\). ∎`, k:R_`Por eso en un polinomio el límite se calcula <b>sustituyendo</b>: \(\lim_{x\to a}P(x)=P(a)\).`}],
+  ans:R_`Todo polinomio es continuo en \(\mathbb R\)` },
+
+{ id:'d-racional', type:'demo', src:'Demostración D3', title:'Las funciones racionales son continuas donde el denominador ≠ 0',
+  st:R_`Demuestre que si \(\lim g=M\neq0\), entonces \(\lim\frac1g=\frac1M\). Concluya sobre \(\frac{P(x)}{Q(x)}\).`,
+  steps:[
+    {t:R_`\(\left|\frac1g-\frac1M\right|=\dfrac{|g-M|}{|g|\,|M|}\).`},
+    {t:R_`Como \(g\to M\neq0\), cerca de \(a\) se cumple \(|g|\gt\frac{|M|}2\) (no se acerca a 0).`, k:R_`Hay que alejar el denominador de cero: por eso se exige \(M\neq0\).`},
+    {t:R_`Entonces \(\left|\frac1g-\frac1M\right|\lt\dfrac{2|g-M|}{M^2}\lt\varepsilon\) si \(|g-M|\lt\frac{\varepsilon M^2}{2}\) ✓.`},
+    {t:R_`\(\frac PQ=P\cdot\frac1Q\): producto de continuas (${RF('d-leyes','D2')}) donde \(Q(a)\neq0\). ∎`, w:R_`Donde \(Q(a)=0\) el teorema no dice nada: ahí hay que calcular el límite a mano (factorizar, etc.).`}],
+  ans:R_`\(\frac PQ\) es continua en todo \(a\) con \(Q(a)\neq0\)` },
+
+{ id:'d-raiz', type:'demo', src:'Demostración D4', title:'La raíz cuadrada es continua en [0, ∞)',
+  st:R_`Demuestre con ε–δ que \(f(x)=\sqrt x\) es continua en todo \(a\gt0\) y por la derecha en \(0\).`,
+  steps:[
+    {t:R_`Para \(a\gt0\), conjugado: \(|\sqrt x-\sqrt a|=\dfrac{|x-a|}{\sqrt x+\sqrt a}\le\dfrac{|x-a|}{\sqrt a}\).`, k:R_`El conjugado convierte una resta de raíces en \(|x-a|\) dividido para algo positivo.`},
+    {t:R_`Elige \(\delta=\min\{a,\ \varepsilon\sqrt a\}\) (el \(a\) asegura \(x\gt0\)). Entonces \(|\sqrt x-\sqrt a|\lt\frac{\delta}{\sqrt a}\le\varepsilon\) ✓.`},
+    {t:R_`En \(a=0\) solo por la derecha: \(\sqrt x\lt\varepsilon\iff x\lt\varepsilon^2\). Basta \(\delta=\varepsilon^2\).`, k:R_`En el borde del dominio se prueba continuidad <b>lateral</b>.`},
+    {t:R_`\(\sqrt x\) es continua en \([0,\infty)\). ∎ (Igual para \(\sqrt[n]x\).)`}],
+  ans:R_`\(\delta=\min\{a,\varepsilon\sqrt a\}\); en 0, \(\delta=\varepsilon^2\)`,
+  g:{x:[-0.5,4], y:[-0.5,2.2], xstep:0.5, ystep:0.5, pieces:[{f:x=>Math.sqrt(x), a:0, b:5, ca:true}]} },
+
+{ id:'d-abs', type:'demo', src:'Demostración D5', title:'El valor absoluto es continuo',
+  st:R_`Demuestre que \(f(x)=|x|\) es continua en \(\mathbb R\).`,
+  steps:[
+    {t:R_`Desigualdad triangular inversa: \(\big||x|-|a|\big|\le|x-a|\).`, k:R_`Sale de \(|x|=|(x-a)+a|\le|x-a|+|a|\) (y lo mismo cambiando \(x\) por \(a\)).`},
+    {t:R_`Con \(\delta=\varepsilon\): \(|x-a|\lt\delta\Rightarrow\big||x|-|a|\big|\lt\varepsilon\) ✓. ∎`},
+    {t:R_`Ojo: \(|x|\) tiene una “esquina” en 0 pero <mark>sí es continua</mark>. Lo que falla ahí es la derivada, no la continuidad.`, w:R_`Esquina ≠ discontinuidad (como la piscina b).`}],
+  ans:R_`\(\delta=\varepsilon\)`,
+  g:{x:[-2,2], y:[-0.5,2], xstep:0.5, ystep:0.5, pieces:[{f:x=>Math.abs(x), a:-3, b:3}]} },
+
+{ id:'d-sencos', type:'demo', src:'Demostración D6', title:'Seno y coseno son continuas',
+  st:R_`Demuestre que \(\operatorname{sen}x\) y \(\cos x\) son continuas en \(\mathbb R\).`,
+  steps:[
+    {t:R_`<b>Lema:</b> \(|\operatorname{sen}h|\le|h|\). En el círculo unitario, \(\operatorname{sen}h\) es el segmento vertical y \(h\) es el arco: el segmento nunca es más largo que el arco.`, k:R_`Este lema es la base de todos los límites trigonométricos.`},
+    {t:R_`Identidad de suma a producto: \(\operatorname{sen}(a+h)-\operatorname{sen}a=2\cos\!\left(a+\tfrac h2\right)\operatorname{sen}\tfrac h2\).`},
+    {t:R_`Como \(|\cos|\le1\) y \(|\operatorname{sen}\frac h2|\le\frac{|h|}2\): \(|\operatorname{sen}(a+h)-\operatorname{sen}a|\le|h|\). Con \(\delta=\varepsilon\) ✓.`, k:R_`Acotar \(|\cos|\le1\) y \(|\operatorname{sen}|\le1\) es el truco de siempre.`},
+    {t:R_`Igual: \(\cos(a+h)-\cos a=-2\operatorname{sen}\!\left(a+\tfrac h2\right)\operatorname{sen}\tfrac h2\Rightarrow|\ldots|\le|h|\). ∎`},
+    {t:R_`Consecuencia: \(\tan x=\frac{\operatorname{sen}x}{\cos x}\) es continua donde \(\cos x\neq0\) (${RF('d-racional','D3')}).`}],
+  ans:R_`\(|\operatorname{sen}(a+h)-\operatorname{sen}a|\le|h|\): \(\delta=\varepsilon\)`,
+  g:{x:[-6.3,6.3], y:[-1.5,1.5], xstep:1, ystep:0.5, pieces:[{f:Math.sin, a:-7, b:7},{f:Math.cos, a:-7, b:7, c:'warn'}]} },
+
+{ id:'d-senx', type:'demo', src:'Demostración D7', title:'El límite notable sen x / x → 1',
+  st:R_`Demuestre que \(\displaystyle\lim_{x\to0}\frac{\operatorname{sen}x}{x}=1\).`,
+  steps:[
+    {t:R_`Para \(0\lt x\lt\frac\pi2\), en el círculo unitario hay tres áreas encajadas: triángulo \(\le\) sector \(\le\) triángulo tangente: \(\tfrac12\operatorname{sen}x\le\tfrac12x\le\tfrac12\tan x\).`, k:R_`Comparar áreas da desigualdades; las desigualdades + sándwich dan límites.`},
+    {t:R_`Divide por \(\frac12\operatorname{sen}x\gt0\): \(1\le\dfrac{x}{\operatorname{sen}x}\le\dfrac1{\cos x}\). Invierte: \(\cos x\le\dfrac{\operatorname{sen}x}{x}\le1\).`, w:R_`Al invertir una desigualdad de positivos, se da la vuelta.`},
+    {t:R_`\(\cos x\to1\) (${RF('d-sencos','D6')}) y \(1\to1\). Por el <mark>teorema del sándwich</mark>, \(\frac{\operatorname{sen}x}x\to1\) por la derecha.`},
+    {t:R_`\(\frac{\operatorname{sen}x}x\) es par (\(\frac{\operatorname{sen}(-x)}{-x}=\frac{\operatorname{sen}x}x\)), así que por la izquierda también es 1. ∎`}],
+  ans:R_`\(\lim_{x\to0}\frac{\operatorname{sen}x}{x}=1\)`,
+  g:{x:[-7,7], y:[-0.5,1.3], xstep:1, ystep:0.25, pieces:[{f:x=>Math.sin(x)/x, a:-8, b:0},{f:x=>Math.sin(x)/x, a:0, b:8},{f:Math.cos, a:-1.5, b:1.5, c:'warn', dash:true}], dots:[{x:0,y:1,open:true}]} },
+
+{ id:'d-exp', type:'demo', src:'Demostración D8', title:'La exponencial eˣ es continua',
+  st:R_`Demuestre que \(f(x)=e^x\) es continua en todo \(a\in\mathbb R\).`,
+  steps:[
+    {t:R_`<b>Idea:</b> basta probarlo en \(0\) y luego “trasladar” con \(e^{a+h}=e^a\,e^h\).`, k:R_`Las propiedades de exponentes reducen todo al caso \(a=0\).`},
+    {t:R_`Desigualdad base: \(e^h\ge1+h\) para todo \(h\). (Viene de \(e^h=\lim\left(1+\frac hn\right)^n\) y la desigualdad de Bernoulli \(\left(1+\frac hn\right)^n\ge1+h\).)`},
+    {t:R_`Aplicada a \(-h\): \(e^{-h}\ge1-h\). Si \(h\lt1\): \(e^h\le\dfrac1{1-h}\).`},
+    {t:R_`Para \(|h|\lt1\): \(\boxed{1+h\le e^h\le\dfrac1{1-h}}\). Ambos extremos tienden a 1 ⇒ por <mark>sándwich</mark> \(\lim_{h\to0}e^h=1=e^0\).`, k:R_`Encerrar la función entre dos cosas que van al mismo valor = teorema del sándwich.`},
+    {t:R_`En \(a\): \(\lim_{h\to0}e^{a+h}=e^a\lim_{h\to0}e^h=e^a\cdot1=e^a\) ✓ ⇒ continua en \(\mathbb R\). ∎`},
+    {t:R_`<b>Versión ε–δ:</b> para \(|h|\le\frac12\), \(|e^h-1|\le2|h|\). Entonces \(|e^x-e^a|=e^a|e^{h}-1|\le2e^a|x-a|\) y basta \(\delta=\min\{\frac12,\frac{\varepsilon}{2e^a}\}\).`}],
+  ans:R_`\(\lim_{x\to a}e^x=e^a\) para todo \(a\)`,
+  g:{x:[-1,1], y:[-0.2,3.5], xstep:0.25, ystep:0.5, pieces:[{f:Math.exp, a:-1, b:0.999},{f:h=>1+h, a:-1, b:1, c:'ok', dash:true},{f:h=>1/(1-h), a:-1, b:0.75, c:'warn', dash:true}]} },
+
+{ id:'d-ln', type:'demo', src:'Demostración D9', title:'El logaritmo natural es continuo en (0, ∞)',
+  st:R_`Demuestre que \(f(x)=\ln x\) es continua en todo \(a\gt0\).`,
+  steps:[
+    {t:R_`Queremos \(|\ln x-\ln a|\lt\varepsilon\), es decir \(-\varepsilon\lt\ln\frac xa\lt\varepsilon\).`},
+    {t:R_`Aplicando \(e^{(\cdot)}\), que es creciente: \(e^{-\varepsilon}\lt\frac xa\lt e^{\varepsilon}\iff a\,e^{-\varepsilon}\lt x\lt a\,e^{\varepsilon}\).`, k:R_`Para “quitar” un logaritmo en una desigualdad, aplica la exponencial (es creciente: no cambia el sentido).`},
+    {t:R_`Distancias desde \(a\): abajo \(a(1-e^{-\varepsilon})\), arriba \(a(e^{\varepsilon}-1)\). La menor es la de abajo.`},
+    {t:R_`<mark>\(\delta=a(1-e^{-\varepsilon})\)</mark>. Además \(\delta\lt a\), así que \(x\) sigue siendo positivo ✓. ∎`, k:R_`Es el mismo método de los problemas de tolerancia: resolver la desigualdad y tomar la distancia menor.`},
+    {t:R_`Ejemplo: \(a=1\), \(\varepsilon=0.1\): \(\delta=1-e^{-0.1}\approx0.095\).`},
+    {t:R_`<span class="m">Otra forma:</span> \(\ln\) es la inversa de \(e^x\), que es continua y estrictamente creciente; la inversa de una función así también es continua.`}],
+  ans:R_`\(\delta=a(1-e^{-\varepsilon})\)`,
+  g:{x:[-0.3,4], y:[-3,2], xstep:0.5, ystep:1, pieces:[{f:Math.log, a:0.0001, b:5}], vlines:[{x:0, c:'warn'}]} },
+
+{ id:'d-comp', type:'demo', src:'Demostración D10', title:'Composición de continuas es continua',
+  st:R_`Si \(g\) es continua en \(a\) y \(f\) es continua en \(b=g(a)\), demuestre que \(f\circ g\) es continua en \(a\).`,
+  steps:[
+    {t:R_`Dado \(\varepsilon\gt0\). Como \(f\) es continua en \(b\): existe \(\eta\gt0\) con \(|y-b|\lt\eta\Rightarrow|f(y)-f(b)|\lt\varepsilon\).`},
+    {t:R_`Como \(g\) es continua en \(a\), usando \(\eta\) como “épsilon”: existe \(\delta\) con \(|x-a|\lt\delta\Rightarrow|g(x)-b|\lt\eta\).`, k:R_`Se encadenan: el \(\eta\) que pide \(f\) se usa como tolerancia para \(g\).`},
+    {t:R_`Entonces \(|x-a|\lt\delta\Rightarrow|g(x)-b|\lt\eta\Rightarrow|f(g(x))-f(g(a))|\lt\varepsilon\) ✓. ∎`},
+    {t:R_`Consecuencias: \(e^{-t^2}\), \(\ln(1+t^2)\), \(\operatorname{sen}(2\theta)\), \(\pi r(t)^2\) son continuas (Ej. 3, 12, 16, Prueba 3).`}],
+  ans:R_`\(f\circ g\) es continua en \(a\)` },
+
+{ id:'d-tvi', type:'demo', src:'Demostración D11', title:'Teorema del Valor Intermedio (idea y uso)',
+  st:R_`Si \(f\) es continua en \([a,b]\) y \(N\) está entre \(f(a)\) y \(f(b)\), existe \(c\in(a,b)\) con \(f(c)=N\).`,
+  steps:[
+    {t:R_`<b>Idea (bisección):</b> si \(f(a)\lt0\lt f(b)\), evalúa en el punto medio; quédate con la mitad donde sigue el cambio de signo; repite. Los intervalos se encogen hacia un punto \(c\) con \(f(c)=0\).`, k:R_`La prueba formal usa la completitud de los reales (axioma del supremo); en el examen se <b>aplica</b>, no se demuestra.`},
+    {t:R_`Ejemplo: \(f(x)=x^3-4x+1\). \(f(0)=1\gt0\), \(f(1)=-2\lt0\). \(f(0.5)=-0.875\) ⇒ raíz en \((0,0.5)\). \(f(0.25)\approx0.016\) ⇒ raíz en \((0.25,0.5)\).`},
+    {t:R_`Sin continuidad falla: el peaje (Ej. 5) pasa de 1 a 2 dólares sin valer nunca 1.5.`, w:R_`Siempre escribe “\(f\) es continua en \([a,b]\) porque…” antes de usar el teorema.`}],
+  ans:R_`Continua + cambio de signo ⇒ hay raíz`,
+  g:{x:[-0.5,1.5], y:[-3,2], xstep:0.25, ystep:1, pieces:[{f:x=>x**3-4*x+1, a:-1, b:2}], shade:[[0.25,0.5]], dots:[{x:0,y:1},{x:1,y:-2,c:'warn'},{x:0.5,y:-0.875,c:'warn'},{x:0.25,y:0.0156}]} }
+];
+
+/* ---------- Capítulo 1: taller completo ---------- */
+const TALLER = [
+{ id:'t1', type:'fisica', src:'Taller · Ej. 1', title:'Ley de Charles: ¿qué pasa cerca de −273 °C?',
+  st:R_`\(V(T)=V_0\left(1+\frac T{273}\right)\). a) ¿Qué pasa con el volumen cuando \(T\to-273\)? b) ¿Por qué −273 °C es el cero absoluto?`,
+  steps:[
+    {t:R_`\(V(T)=V_0+\frac{V_0}{273}T\) es un polinomio de grado 1 ⇒ continua.`, q:R_`Los polinomios son continuos: ${RF('d-leyes','D2')}. Por eso el límite se calcula sustituyendo.`, k:R_`Función continua en \(a\) ⇒ \(\lim_{x\to a}f(x)=f(a)\): <b>sustituye</b>.`},
+    {t:R_`\(\lim_{T\to-273}V=V_0(1-1)=0\).`},
+    {t:R_`Si \(T\lt-273\) ⇒ \(V\lt0\): imposible. El límite con sentido es el lateral \(\lim_{T\to-273^+}V=0^+\).`, k:R_`Respeta el <b>dominio físico</b>.`},
+    {t:R_`a) Al enfriarse hacia −273 °C, el volumen disminuye linealmente hasta anularse.`, w:R_`No respondas solo “= 0”: interpreta.`},
+    {t:R_`b) \(V=\frac{V_0}{273}(T+273)=\frac{V_0}{273}T_K\): el volumen es proporcional a la temperatura en kelvin. −273 °C = 0 K: temperatura mínima posible.`}],
+  ans:R_`\(\lim_{T\to-273^+}V=0\); −273 °C = 0 K`,
+  g:{x:[-320,110], y:[-0.3,1.5], xstep:50, ystep:0.25, pieces:[{f:t=>1+t/273, a:-320, b:-273, c:'warn', dash:true},{f:t=>1+t/273, a:-273, b:110, ca:true}]} },
+{ id:'t2', type:'parametros', src:'Taller · Ej. 2', title:'Tres tramos: hallar c y d',
+  st:R_`\[f(x)=\begin{cases}4x,&x\le-1\\cx+d,&-1\lt x\lt2\\-5x,&x\ge2\end{cases}\]`,
+  steps:[
+    {t:R_`Tramos polinomiales ⇒ continuos. Uniones: \(x=-1\) y \(x=2\).`, q:R_`${RF('d-leyes','D2')}: los polinomios son continuos.`},
+    {t:R_`En \(-1\): \(f(-1)=-4\); \(\lim^+=-c+d\) ⇒ \(\boxed{-c+d=-4}\).`, k:R_`En \(x=-1\) el “=” lo tiene \(4x\): ese tramo da \(f(-1)\).`},
+    {t:R_`En \(2\): \(\lim^-=2c+d\); \(f(2)=-10\) ⇒ \(\boxed{2c+d=-10}\).`},
+    {t:R_`Restando: \(3c=-6\Rightarrow c=-2\); \(d=-6\).`},
+    {t:R_`<span class="m">Otra forma:</span> el tramo medio es la recta que une \((-1,-4)\) y \((2,-10)\): pendiente \(-2\), \(y=-2x-6\).`, k:R_`Tramo medio lineal = recta que une los extremos de los otros tramos.`}],
+  ans:R_`\(c=-2,\ d=-6\)`,
+  g:{x:[-4,5], y:[-26,10], ystep:5, pieces:[{f:x=>4*x, a:-10, b:-1, cb:true},{f:x=>-2*x-6, a:-1, b:2, c:'ink'},{f:x=>-5*x, a:2, b:10, ca:true}]} },
+{ id:'t3', type:'intervalos', src:'Taller · Ej. 3', title:'Alcance de un proyectil',
+  st:R_`\(R(\theta)=\dfrac{v_0^2\operatorname{sen}(2\theta)}{g}\). Indique dónde es continua.`,
+  steps:[
+    {t:R_`\(2\theta\) polinomio; \(\operatorname{sen}\) continua ⇒ \(\operatorname{sen}(2\theta)\) continua.`, q:R_`${RF('d-sencos','D6')} (seno continuo) y ${RF('d-comp','D10')} (composición).`},
+    {t:R_`Multiplicar por la constante \(\frac{v_0^2}g\) (\(g\neq0\)) conserva la continuidad ⇒ continua en \(\mathbb R\).`},
+    {t:R_`Físicamente \(0\le\theta\le\frac\pi2\): continua en \([0,\frac\pi2]\) (laterales en los extremos). Máximo en \(\theta=\frac\pi4\).`, w:R_`Valer 0 en los extremos no es ser discontinua.`}],
+  ans:R_`\(\mathbb R\); físicamente \([0,\pi/2]\)`,
+  g:{x:[-1.6,3.2], y:[-1.2,1.2], xstep:0.5, ystep:0.5, shade:[[0,Math.PI/2]], pieces:[{f:t=>Math.sin(2*t), a:-2, b:4}]} },
+ext('pz-4', { id:'t4', src:'Taller · Ej. 4', title:'Demostrar continuidad en intervalos',
+  st:R_`a) \(f(x)=x+\sqrt{x-4}\) en \([4,\infty)\). b) \(g(x)=\dfrac{x-1}{3x+6}\) en \((-\infty,-2)\).`,
+  steps:[
+    {t:R_`a) Dominio: \(x\ge4\).`},
+    {t:R_`\(a\gt4\): \(\lim_{x\to a}(x+\sqrt{x-4})=a+\sqrt{a-4}=f(a)\).`, q:R_`Suma de continuas (${RF('d-leyes','D2')}) y raíz continua (${RF('d-raiz','D4')}) compuesta con \(x-4\) (${RF('d-comp','D10')}).`},
+    {t:R_`\(a=4\): \(\lim_{x\to4^+}f=4=f(4)\) ⇒ continua en \([4,\infty)\). ∎`, k:R_`En el borde de una raíz solo existe el límite lateral.`},
+    {t:R_`b) \(g\) racional; \(3x+6=0\iff x=-2\notin(-\infty,-2)\) ⇒ continua en el intervalo. ∎`, q:R_`${RF('d-racional','D3')}: racionales continuas donde el denominador ≠ 0.`},
+    {t:R_`En \(-2\): \(\lim_{x\to-2^-}g=\frac{-3}{0^-}=+\infty\) (asíntota): por eso el intervalo es abierto ahí.`}],
+  ans:R_`a) continua en \([4,\infty)\); b) continua en \((-\infty,-2)\)` }),
+ext('pz-peaje', { id:'t5', src:'Taller · Ej. 5' }),
+ext('pz-grav', { id:'t6', src:'Taller · Ej. 6' }),
+ext('pz-7', { id:'t7' }),
+ext('pz-8', { id:'t8' }),
+{ id:'t9', type:'redefinir', src:'Taller · Ej. 9', title:'¿Límite L y f(a) = M ≠ L?',
+  st:R_`Si \(\lim_{x\to a}f(x)=L\), ¿es posible que \(f(a)=M\neq L\)? Explique.`,
+  steps:[
+    {t:R_`<mark>Sí.</mark> En la definición se usa \(0\lt|x-a|\lt\delta\): el “\(0\lt\)” excluye \(x=a\).`, k:R_`El límite mira el <b>camino</b> (los \(x\) cercanos), no el <b>destino</b> (\(f(a)\)).`},
+    {t:R_`Ejemplo: \(f(x)=x^2\) si \(x\neq1\), \(f(1)=5\). \(\lim_{x\to1}f=1\), pero \(f(1)=5\).`},
+    {t:R_`Entonces \(f\) no es continua en \(a\): discontinuidad evitable (se arregla con \(f(a)=L\)).`, w:R_`“No, porque el límite es el valor de la función” solo vale si \(f\) es continua.`}],
+  ans:R_`Sí; discontinuidad evitable`,
+  g:{x:[-2,3], y:[-1,6], pieces:[{f:x=>x*x, a:-3, b:4}], dots:[{x:1,y:1,open:true},{x:1,y:5,c:'warn'}]} },
+{ id:'t10', type:'redefinir', src:'Taller · Ej. 10', title:'Discontinuidades y redefinición',
+  st:R_`a) \(f(x)=\dfrac{x-3}{x^2-9}\) &nbsp; b) \(f(x)=\dfrac{x^2-7x+12}{x-3}\)`,
+  steps:[
+    {t:R_`a) Candidatos \(x=\pm3\). Factor: \(\frac{x-3}{(x-3)(x+3)}=\frac1{x+3}\) (\(x\neq\pm3\)).`, k:R_`Factor que se cancela ⇒ evitable; factor que queda abajo ⇒ infinita.`},
+    {t:R_`\(x=3\): \(\lim=\frac16\) ⇒ evitable, \(F(3)=\frac16\). \(x=-3\): \(\pm\infty\) ⇒ infinita.`, w:R_`No se puede hacer continua en todo \(\mathbb R\) (asíntota en −3).`},
+    {t:R_`b) \(x^2-7x+12=(x-3)(x-4)\) ⇒ \(f(x)=x-4\) para \(x\neq3\).`},
+    {t:R_`\(\lim_{x\to3}=-1\) ⇒ evitable; \(F(x)=x-4\), continua en \(\mathbb R\).`}],
+  ans:R_`a) evitable en 3, infinita en −3. b) \(F(x)=x-4\)`,
+  g:{x:[-7,6], y:[-3,3], pieces:[{f:x=>1/(x+3), a:-8, b:-3},{f:x=>1/(x+3), a:-3, b:7}], vlines:[{x:-3,c:'warn'}], dots:[{x:3,y:1/6,open:true}]} },
+ext('pz-11', { id:'t11' }),
+ext('pz-12', { id:'t12', title:'Intervalos con exponencial y logaritmo (demostrado)',
+  st:R_`\(L(v)=v\ln(1-v^2)\) y \(f(t)=e^{-t^2}\ln(1+t^2)\). Dé los intervalos de continuidad y justifique cada pieza.`,
+  steps:[
+    {t:R_`\(L\): el logaritmo exige \(1-v^2\gt0\iff-1\lt v\lt1\).`, k:R_`Logaritmo ⇒ desigualdad estricta ⇒ paréntesis.`},
+    {t:R_`En \((-1,1)\): \(1-v^2\) es polinomio, \(\ln\) es continua en \((0,\infty)\) ⇒ \(\ln(1-v^2)\) continua.`, q:R_`Polinomio: ${RF('d-leyes','D2')}. Logaritmo continuo: ${RF('d-ln','D9')}. Composición: ${RF('d-comp','D10')}.`},
+    {t:R_`\(v\cdot\ln(1-v^2)\): producto de continuas ⇒ \(L\) continua en \((-1,1)\).`, w:R_`\([-1,1]\) está mal: \(\ln0\) no existe.`},
+    {t:R_`\(f\): \(-t^2\) polinomio y \(e^u\) continua ⇒ \(e^{-t^2}\) continua en \(\mathbb R\).`, q:R_`¿Por qué \(e^x\) es continua? ${RF('d-exp','D8')}: se encierra \(e^h\) entre \(1+h\) y \(\frac1{1-h}\) y se usa el sándwich.`},
+    {t:R_`\(1+t^2\ge1\gt0\) para todo \(t\) ⇒ \(\ln(1+t^2)\) continua en \(\mathbb R\).`, q:R_`¿Por qué \(\ln\) es continua? ${RF('d-ln','D9')}: \(\delta=a(1-e^{-\varepsilon})\).`},
+    {t:R_`Producto ⇒ \(f\) continua en \((-\infty,\infty)\).`}],
+  ans:R_`\(L\): \((-1,1)\); \(f\): \(\mathbb R\)` }),
+ext('pz-13', { id:'t13' }),
+{ id:'t14', type:'parametros', src:'Taller · Ej. 14', title:'Hallar c y d con conjugado',
+  st:R_`\[f(x)=\begin{cases}c,&x=-3\\\frac{9-x^2}{4-\sqrt{x^2+7}},&|x|\lt3\\d,&x=3\end{cases}\]`,
+  steps:[
+    {t:R_`\(|x|\lt3\iff-3\lt x\lt3\). La función solo existe en \([-3,3]\).`, k:R_`En los extremos de un intervalo cerrado se usan límites <b>laterales</b> (de adentro).`},
+    {t:R_`En \(\pm3\) sale \(\frac00\). Conjugado: \(\frac{(9-x^2)(4+\sqrt{x^2+7})}{16-(x^2+7)}\)\(=4+\sqrt{x^2+7}\).`, k:R_`\(16-(x^2+7)=9-x^2\): el factor problemático se cancela.`},
+    {t:R_`\(\lim_{x\to3^-}=4+4=8\Rightarrow d=8\). \(\lim_{x\to-3^+}=8\Rightarrow c=8\).`}],
+  ans:R_`\(c=d=8\)`,
+  g:{x:[-4,4], y:[0,10], ystep:2, pieces:[{f:x=>4+Math.sqrt(x*x+7), a:-3, b:3, ca:true, cb:true}]} },
+ext('pz-15', { id:'t15' }),
+{ id:'t16', type:'composicion', src:'Taller · Ej. 16', title:'Charco de aceite (taller)',
+  st:R_`\(r(t)=9t^2\) si \(0\le t\le2\); \(16t+4\) si \(t\gt2\). a) ¿Por qué por partes? b) Continuidad del área.`,
+  steps:[
+    {t:R_`a) Primero el radio crece acelerado (\(9t^2\)); luego a ritmo constante (16 u/min): cambia el régimen.`},
+    {t:R_`\(r(2)=36=\lim_{t\to2^+}r\) ⇒ \(r\) continua.`},
+    {t:R_`\(A=\pi r^2\): composición ⇒ continua en \([0,\infty)\); \(A(2)=1296\pi\).`, q:R_`${RF('d-comp','D10')} con \(G(x)=\pi x^2\) (polinomio, ${RF('d-leyes','D2')}).`, k:R_`Basta revisar \(r\); el área hereda la continuidad.`}],
+  ans:R_`\(A\) continua en \([0,\infty)\)`,
+  g:{x:[0,4], y:[0,5000], ystep:1000, xstep:0.5, pieces:[{f:t=>81*t**4, a:0, b:2, ca:true},{f:t=>(16*t+4)**2, a:2, b:5, c:'ink'}]} },
+ext('pz-17', { id:'t17' }),
+{ id:'t18', type:'fisica', src:'Taller · Ej. 18', title:'Charles: construir el modelo desde el texto',
+  st:R_`“El volumen varía \(\frac1{273}\) de su volumen a 0 °C por cada grado.” a) Modelo. b) \(\lim_{T\to-273}\). c) Laterales. d) Interpretación.`,
+  steps:[
+    {t:R_`“Varía una cantidad fija por grado” ⇒ <mark>modelo lineal</mark>: \(\Delta V=\frac{V_0}{273}\Delta T\).`, k:R_`Cambio constante por unidad ⇒ recta \(y=y_0+mx\).`},
+    {t:R_`a) \(V(T)=V_0+\frac{V_0}{273}T\).`},
+    {t:R_`b) \(\lim_{T\to-273}V=0\).`},
+    {t:R_`c) Derecha: 0, con sentido físico. Izquierda: solo en la fórmula (\(V\lt0\)); en el modelo físico no existe.`, k:R_`Un lateral sin sentido físico se descarta <b>explicando por qué</b>.`},
+    {t:R_`d) Cero absoluto, 0 K.`}],
+  ans:R_`\(V=V_0(1+T/273)\); \(\lim_{T\to-273^+}V=0\)` },
+ext('pz-19', { id:'t19', st:R_`\[T(t)=\begin{cases}2t^3-9t^2+12t+k,&t\lt3\\at^2+bt+c,&3\le t\le5\\60+\frac{40}t,&t\gt5\end{cases}\]a) Interprete cada parte. b) Reescriba para que sea continua.`,
+  steps:[
+    {t:R_`a) \(t\lt3\): arranque; \(T(0)=k\). Sube, baja un poco y vuelve a subir (ajuste del control).`},
+    {t:R_`\(3\le t\le5\): transición controlada. \(t\gt5\): \(\lim_{t\to\infty}T=60\) ⇒ se estabiliza en 60 °C.`, k:R_`\(\lim_{t\to\infty}(60+\frac{40}t)=60\): asíntota horizontal = régimen estable.`},
+    ...OLD['pz-19'].steps]})
+];
+
+/* ---------- Capítulo 2: Prueba 2 + horno ---------- */
+const PRUEBA = ['pz-piscina-a','pz-piscina-b','pz-disco','pz-mancha','pz-horno'].map(id => OLD[id]);
+
+/* ---------- Capítulo 3: tipo examen ---------- */
+const MODELOS = [
+  OLD['pz-hormiga'],
+  { id:'m-corredor', type:'geometria', src:'Ejemplo nuevo', title:'El corredor entre dos postes',
+    st:R_`Pista recta de 100 m entre los postes P (0) y Q (100). a) \(f(x)\): distancia del corredor al poste más cercano. b) \(g(x)\): distancia de ese poste a P.`,
+    steps:[
+      {t:R_`a) “Más cercano” = mínimo: \(f(x)=\min(x,100-x)\): \(x\) si \(x\le50\); \(100-x\) si \(x\gt50\).`, k:R_`“Más cercano” ⇒ mínimo ⇒ tramos que cambian donde las distancias se igualan.`},
+      {t:R_`En 50: 50 por ambos lados ⇒ \(f\) continua.`},
+      {t:R_`b) \(g=0\) si \(x\lt50\) (el más cercano es P); \(g=100\) si \(x\gt50\) ⇒ salto en 50.`, w:R_`Igual que la piscina a): distancia entre dos postes, no del corredor.`}],
+    ans:R_`\(f\) continua; \(g\) con salto en 50`,
+    g:{x:[0,100], y:[-10,110], xstep:10, ystep:20, pieces:[{f:x=>Math.min(x,100-x), a:0, b:100},{f:()=>0, a:0, b:50, cb:false, c:'warn'},{f:()=>100, a:50, b:100, ca:false, c:'warn'}]} },
+  OLD['pz-pendulo'],
+  { id:'m-placas', type:'epsdelta', src:'Ejemplo nuevo', title:'Placas cuadradas de 400 cm² ± 2 %',
+    st:R_`\(A(x)=x^2\). Área 400 cm² con tolerancia ±2 %. Halle \(\varepsilon\) y \(\delta\).`,
+    steps:[
+      {t:R_`\(x_0=20\); \(\lim_{x\to20}x^2=400\); \(\varepsilon=0.02\cdot400=8\).`, k:R_`Porcentaje ⇒ conviértelo a unidades de la salida.`},
+      {t:R_`\(392\lt x^2\lt408\iff19.799\lt x\lt20.199\).`},
+      {t:R_`Distancias 0.201 y 0.199 ⇒ \(\delta=0.199\) cm.`, k:R_`La menor distancia.`}],
+    ans:R_`\(\varepsilon=8\) cm², \(\delta\approx0.199\) cm` },
+  OLD['pz-globo'],
+  { id:'m-costo', type:'composicion', src:'Ejemplo nuevo', title:'Costo de limpiar una mancha',
+    st:R_`\(r(t)=3t\) si \(0\le t\le2\); \(t^2+2\) si \(t\gt2\). Limpiar cuesta 5 $/m². ¿Es continuo el costo?`,
+    steps:[
+      {t:R_`\(C(t)=5\pi r(t)^2\): composición de \(G(x)=5\pi x^2\) con \(r\).`},
+      {t:R_`\(r(2)=6=\lim_{t\to2^+}(t^2+2)\) ⇒ \(r\) continua ⇒ \(C\) continua en \([0,\infty)\).`, k:R_`Composición: si \(r\) no salta, el costo tampoco.`}],
+    ans:R_`\(C\) continua; \(C(2)=180\pi\)` },
+  OLD['pz-luz'], OLD['pz-esfera'], OLD['pz-masa'], OLD['pz-tvi']
+];
+
+/* ---------- Páginas de texto ---------- */
+const RESUMEN_HTML = R_`
+<div class="sheet">
+<h3>Continuidad en \(a\)</h3><p>(1) \(f(a)\) existe; (2) \(\lim_{x\to a}f(x)\) existe (\(\lim^-=\lim^+\)); (3) \(\lim_{x\to a}f(x)=f(a)\).</p>
+<h3>Tipos de discontinuidad</h3><p><span class="hl-y">Evitable</span>: el límite existe pero \(\neq f(a)\) → se redefine. <span class="hl-p">Salto</span>: laterales distintos. <span class="hl-p">Infinita</span>: algún lateral \(\pm\infty\).</p>
+<h3>Al sustituir sale…</h3><p>número → listo · \(\frac k0\) → \(\pm\infty\) (signos) · \(\frac00\) → factorizar / conjugado / expandir.</p>
+<h3>Dominios = dónde es continua</h3><p>\(\frac PQ\): \(Q\neq0\) · \(\sqrt A\): \(A\ge0\) (corchete) · \(\ln A\): \(A\gt0\) (paréntesis) · polinomios, \(e^x\), sen, cos: \(\mathbb R\).</p>
+<h3>Teoremas (con su demostración en el capítulo 0)</h3><p>Suma, producto (D2), cociente (D3), raíz (D4), valor absoluto (D5), sen y cos (D6), \(e^x\) (D8), \(\ln x\) (D9), composición (D10), TVI (D11).</p>
+<h3>ε–δ con tolerancias</h3><p>\(\varepsilon\) = tolerancia de la salida · \(x_0\): \(f(x_0)=L\) · resolver \(L-\varepsilon\lt f(x)\lt L+\varepsilon\) · \(\delta\) = <span class="hl-g">menor distancia</span>.</p>
+<h3>Factorizaciones</h3><p>\(a^2-b^2=(a-b)(a+b)\) · \(a^3-b^3=(a-b)(a^2+ab+b^2)\) · \((\sqrt A-B)(\sqrt A+B)=A-B^2\) · \((1+h)^3=1+3h+3h^2+h^3\).</p>
+<h3>Respuesta de 10/10</h3><p>Dominio → tramos continuos (cita el teorema) → puntos críticos con las 3 condiciones → resolver → verificar → concluir e interpretar.</p>
+</div>`;
+
+
+/* =================== TALLER Y PRUEBA: versión con todos los pasos =================== */
+const TB = (head, rows) => `<table class="tb"><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
+const TALLER_FULL = [
+/* ---------------- 1 ---------------- */
+{ id:'t1', type:'fisica', src:'Taller · Ej. 1', title:'Ley de Charles: ¿qué pasa cerca de −273 °C?',
+  st:R_`A presión constante, \(V(T)=V_0\left(1+\dfrac{T}{273}\right)\) (\(T\) en °C). a) ¿Qué pasa con el volumen cuando \(T\to-273\)? b) ¿Por qué a −273 °C se le llama cero absoluto?`,
+  steps:[
+    {t:R_`<b>Leer el modelo.</b> \(V_0\) es el volumen a 0 °C: es un número fijo (constante). La variable es \(T\).`},
+    {t:R_`Distribuimos \(V_0\): \(V(T)=V_0\cdot1+V_0\cdot\dfrac{T}{273}=V_0+\dfrac{V_0}{273}\,T\). Es una <mark>recta</mark> con pendiente \(\frac{V_0}{273}\) y corte \(V_0\).`},
+    {t:R_`Una recta es un polinomio de grado 1, y los polinomios son continuos en todo \(\mathbb R\).`, q:R_`Demostrado en ${RF('d-leyes','D2')}.`, k:R_`Si \(f\) es continua en \(a\), entonces \(\lim_{x\to a}f(x)=f(a)\): el límite se calcula <b>sustituyendo</b>.`},
+    {t:R_`Sustituimos \(T=-273\): \(\dfrac{-273}{273}=-1\), entonces \(1+(-1)=0\) y \(V=V_0\cdot0=0\).\[\lim_{T\to-273}V(T)=0\]`},
+    {t:R_`Comprobamos con números (dividiendo por \(V_0\)):`+TB(['\\(T\\)','−263','−272','−272.9','−272.99'],[['\\(V/V_0\\)','0.0366','0.00366','0.000366','0.0000366']])+R_`Cada vez que \(T\) se acerca diez veces más, el volumen se hace diez veces más pequeño: tiende a 0.`},
+    {t:R_`<b>Dominio físico.</b> Si \(T\lt-273\), por ejemplo \(T=-300\): \(1-\frac{300}{273}\lt0\Rightarrow V\lt0\). Un volumen negativo no existe.`, k:R_`Respeta siempre el dominio físico: aquí \(T\ge-273\).`},
+    {t:R_`Por eso el límite que tiene sentido es el lateral derecho (acercarse desde temperaturas mayores): \(\displaystyle\lim_{T\to-273^+}V(T)=0^+\).`},
+    {t:R_`<b>a)</b> Al enfriar el gas hacia −273 °C, su volumen disminuye en línea recta (pierde \(\frac{1}{273}\) de \(V_0\) por cada grado) hasta anularse.`, w:R_`No respondas solo “= 0”: el problema pide qué ocurre, hay que interpretarlo.`},
+    {t:R_`<b>b)</b> Sumamos dentro del paréntesis: \(1+\frac{T}{273}=\frac{273+T}{273}\). Llamamos \(T_K=T+273\) (temperatura en kelvin): \(V=\dfrac{V_0}{273}\,T_K\).`},
+    {t:R_`El volumen es proporcional a \(T_K\). Cuando \(T=-273\) °C, \(T_K=0\) y \(V=0\); más abajo saldría negativo. Por eso −273 °C (0 K) es la <mark>temperatura más baja posible</mark>: el cero absoluto. (En la realidad el gas se licúa antes.)`}],
+  ans:R_`\(\lim_{T\to-273^+}V=0\); −273 °C = 0 K es el cero absoluto`,
+  g:{x:[-320,110], y:[-0.3,1.5], xstep:50, ystep:0.25, pieces:[{f:t=>1+t/273, a:-320, b:-273, c:'warn', dash:true},{f:t=>1+t/273, a:-273, b:110, ca:true}]} },
+
+/* ---------------- 2 ---------------- */
+{ id:'t2', type:'parametros', src:'Taller · Ej. 2', title:'Tres tramos: hallar c y d',
+  st:R_`\[f(x)=\begin{cases}4x,&x\le-1\\cx+d,&-1\lt x\lt2\\-5x,&x\ge2\end{cases}\]Encuentre \(c\) y \(d\) para que \(f\) sea continua en todos los reales.`,
+  steps:[
+    {t:R_`<b>Leer los tramos en la recta numérica:</b> hasta \(-1\) (incluido) manda \(4x\); entre \(-1\) y \(2\) (sin incluirlos) manda \(cx+d\); desde \(2\) (incluido) manda \(-5x\).`, k:R_`Marca dónde está el “=”: ese tramo da el valor de \(f\) en el punto de unión.`},
+    {t:R_`Los tres tramos son polinomios, así que son continuos dentro de sus intervalos. Solo pueden fallar las <mark>uniones</mark>: \(x=-1\) y \(x=2\).`, q:R_`Polinomios continuos: ${RF('d-leyes','D2')}.`},
+    {t:R_`Contamos: 2 incógnitas (\(c,d\)) y 2 uniones ⇒ saldrán 2 ecuaciones.`},
+    {t:R_`<b>Unión \(x=-1\).</b> \(f(-1)\): como \(-1\le-1\), usamos \(4x\): \(f(-1)=4(-1)=-4\). Por la izquierda (\(x\lt-1\)) también \(4x\to-4\).`},
+    {t:R_`Por la derecha (\(x\) un poco mayor que \(-1\)) estamos en el tramo \(cx+d\): \(\lim_{x\to-1^+}f=c(-1)+d=-c+d\).`},
+    {t:R_`Continuidad en \(-1\): \(-c+d=-4\). &nbsp;<b>(E1)</b>`},
+    {t:R_`<b>Unión \(x=2\).</b> \(f(2)\): como \(2\ge2\), usamos \(-5x\): \(f(2)=-10\). Por la izquierda (\(x\lt2\)): \(\lim_{x\to2^-}f=2c+d\).`},
+    {t:R_`Continuidad en \(2\): \(2c+d=-10\). &nbsp;<b>(E2)</b>`},
+    {t:R_`<b>Resolver.</b> Restamos (E2) − (E1): \[\begin{aligned}(2c+d)-(-c+d)&=-10-(-4)\\2c+d+c-d&=-6\\3c&=-6\Rightarrow c=-2\end{aligned}\]`, k:R_`Restar las ecuaciones elimina \(d\) porque aparece igual en ambas.`},
+    {t:R_`Reemplazamos en (E1): \(-(-2)+d=-4\Rightarrow2+d=-4\Rightarrow d=-6\).`},
+    {t:R_`<b>Verificar.</b> El tramo medio queda \(-2x-6\). En \(-1\): \(-2(-1)-6=2-6=-4\) ✓ (igual a \(4(-1)\)). En \(2\): \(-2(2)-6=-10\) ✓ (igual a \(-5(2)\)).`},
+    {t:R_`<span class="m">Otra forma (geométrica):</span> el tramo del medio es una recta que debe unir \((-1,-4)\) con \((2,-10)\). Pendiente: \(m=\frac{-10-(-4)}{2-(-1)}=\frac{-6}{3}=-2\). Punto-pendiente: \(y+4=-2(x+1)\Rightarrow y=-2x-6\).`, k:R_`Tramo medio lineal = recta que une los extremos de los otros dos tramos.`}],
+  ans:R_`\(c=-2,\ d=-6\) (tramo medio \(-2x-6\))`,
+  g:{x:[-4,5], y:[-26,10], ystep:5, pieces:[{f:x=>4*x, a:-10, b:-1, cb:true},{f:x=>-2*x-6, a:-1, b:2, c:'ink'},{f:x=>-5*x, a:2, b:10, ca:true}]} },
+
+/* ---------------- 3 ---------------- */
+{ id:'t3', type:'intervalos', src:'Taller · Ej. 3', title:'Alcance de un proyectil',
+  st:R_`\(R(\theta)=\dfrac{v_0^2\operatorname{sen}(2\theta)}{g}\) (\(\theta\) en radianes, \(v_0\) velocidad inicial, \(g\) gravedad). Indique el intervalo donde \(R\) es continua.`,
+  steps:[
+    {t:R_`<b>¿Qué es variable?</b> Solo \(\theta\). \(v_0\) y \(g\approx9.8\) son constantes, y \(g\neq0\).`},
+    {t:R_`Separamos la fórmula en piezas: \(R(\theta)=\underbrace{\dfrac{v_0^2}{g}}_{\text{constante}}\cdot\operatorname{sen}(\underbrace{2\theta}_{\text{interior}})\).`},
+    {t:R_`Interior: \(u=2\theta\) es un polinomio ⇒ continuo en \(\mathbb R\).`, q:R_`${RF('d-leyes','D2')}.`},
+    {t:R_`Exterior: \(\operatorname{sen}u\) es continua para todo \(u\).`, q:R_`Se prueba con \(|\operatorname{sen}h|\le|h|\): ${RF('d-sencos','D6')}.`},
+    {t:R_`Composición: \(\operatorname{sen}(2\theta)\) es continua en \(\mathbb R\).`, q:R_`${RF('d-comp','D10')}.`},
+    {t:R_`Multiplicar por la constante \(\frac{v_0^2}{g}\) conserva la continuidad (producto de continuas). Hace falta \(g\neq0\) para que esa constante exista.`},
+    {t:R_`No hay denominadores con \(\theta\), ni raíces, ni logaritmos ⇒ ningún punto excluido. <mark>\(R\) es continua en \((-\infty,\infty)\)</mark>.`, k:R_`Si no hay divisiones, raíces pares ni logaritmos con la variable, la función es continua en todo \(\mathbb R\).`},
+    {t:R_`<b>Contexto físico:</b> sobre suelo horizontal se dispara con \(0\le\theta\le\frac\pi2\). En \(\theta=0\): \(\lim_{\theta\to0^+}R=\frac{v_0^2\operatorname{sen}0}{g}=0=R(0)\). En \(\frac\pi2\): \(\operatorname{sen}\pi=0\Rightarrow R=0\). Continua en \([0,\frac\pi2]\).`, w:R_`Que \(R\) valga 0 en los extremos no la hace discontinua.`},
+    {t:R_`Extra: el máximo ocurre cuando \(\operatorname{sen}2\theta=1\Rightarrow2\theta=\frac\pi2\Rightarrow\theta=\frac\pi4\) (45°), y vale \(\frac{v_0^2}{g}\).`}],
+  ans:R_`Continua en \((-\infty,\infty)\); en el contexto físico, en \([0,\pi/2]\)`,
+  g:{x:[-1.6,3.2], y:[-1.2,1.2], xstep:0.5, ystep:0.5, shade:[[0,Math.PI/2]], pieces:[{f:t=>Math.sin(2*t), a:-2, b:4}]} },
+
+/* ---------------- 4 ---------------- */
+{ id:'t4', type:'intervalos', src:'Taller · Ej. 4', title:'Demostrar continuidad en intervalos',
+  st:R_`Demuestre que: a) \(f(x)=x+\sqrt{x-4}\) es continua en \([4,\infty)\); b) \(g(x)=\dfrac{x-1}{3x+6}\) es continua en \((-\infty,-2)\).`,
+  steps:[
+    {t:R_`<b>Qué significa demostrar:</b> probar que en <i>cada</i> punto \(a\) del intervalo se cumple \(\lim_{x\to a}f(x)=f(a)\) (en los bordes cerrados, con el límite lateral).`, k:R_`“Demostrar” no es afirmar: hay que mostrar la igualdad del límite con el valor.`},
+    {t:R_`<b>a) Dominio.</b> La raíz exige \(x-4\ge0\iff x\ge4\). El dominio es \([4,\infty)\), justo el intervalo pedido.`},
+    {t:R_`Piezas: \(x\) es continua (${RF('d-cte','D1')}); \(\sqrt{x-4}\) es la raíz (continua para radicando \(\ge0\), ${RF('d-raiz','D4')}) compuesta con \(x-4\) (${RF('d-comp','D10')}).`},
+    {t:R_`<b>Puntos interiores \(a\gt4\):</b>\[\begin{aligned}\lim_{x\to a}\big(x+\sqrt{x-4}\big)&=\lim_{x\to a}x+\lim_{x\to a}\sqrt{x-4}\\&=a+\sqrt{\lim_{x\to a}(x-4)}\\&=a+\sqrt{a-4}=f(a)\end{aligned}\]`, q:R_`1.ª igualdad: ley de la suma. 2.ª: el límite “entra” en la raíz porque la raíz es continua. 3.ª: el límite de un polinomio se obtiene sustituyendo.`},
+    {t:R_`<b>Borde \(a=4\):</b> a la izquierda de 4 la raíz no existe (\(\sqrt{\text{negativo}}\)), así que solo hay límite por la derecha: \(\lim_{x\to4^+}\big(x+\sqrt{x-4}\big)=4+\sqrt0=4\).`, k:R_`En el borde del dominio de una raíz solo existe el límite lateral.`},
+    {t:R_`\(f(4)=4+\sqrt{0}=4\). Coinciden ⇒ continua por la derecha en 4. Conclusión: \(f\) es continua en \([4,\infty)\). ∎`},
+    {t:R_`<b>b)</b> \(g\) es un cociente de polinomios (racional): es continua donde el denominador no es cero.`, q:R_`${RF('d-racional','D3')}.`},
+    {t:R_`Denominador cero: \(3x+6=0\iff3x=-6\iff x=-2\). Ese punto <b>no</b> está en \((-\infty,-2)\) (el paréntesis lo excluye).`},
+    {t:R_`Para \(a\lt-2\): \(3a+6\lt0\), así que \(3a+6\neq0\) y por la ley del cociente \(\lim_{x\to a}\dfrac{x-1}{3x+6}=\dfrac{a-1}{3a+6}=g(a)\). Continua en \((-\infty,-2)\). ∎`},
+    {t:R_`¿Por qué no se incluye \(-2\)? Numerador en \(-2\): \(-3\). Denominador: tiende a 0 con valores negativos. \(\frac{-3}{0^-}=+\infty\) ⇒ asíntota vertical.`}],
+  ans:R_`a) continua en \([4,\infty)\); b) continua en \((-\infty,-2)\)`,
+  g:{x:[2,14], y:[0,18], xstep:2, ystep:2, pieces:[{f:x=>x+Math.sqrt(x-4), a:4, b:15, ca:true}]} },
+
+/* ---------------- 5 ---------------- */
+{ id:'t5', type:'tarifas', src:'Taller · Ej. 5', title:'Peaje en horas pico',
+  st:R_`Peaje de 1 dólar, excepto de 7–10 am y de 4–7 pm, cuando cuesta 2 dólares. a) Exprese el costo en función de las horas desde la medianoche. b) Demuestre dónde es discontinua.`,
+  steps:[
+    {t:R_`<b>Pasar a reloj de 24 h:</b> 7 am = 7; 10 am = 10; 4 pm = 12+4 = 16; 7 pm = 12+7 = 19. Variable: \(t\in[0,24)\).`, k:R_`Convierte las horas antes de escribir tramos.`},
+    {t:R_`<b>Convención:</b> la tarifa alta empieza en punto y termina justo antes de la hora final (“\(\le\)” al inicio, “\(\lt\)” al final).`},
+    {t:R_`\[C(t)=\begin{cases}1,&0\le t\lt7\\2,&7\le t\lt10\\1,&10\le t\lt16\\2,&16\le t\lt19\\1,&19\le t\lt24\end{cases}\]`},
+    {t:R_`Dentro de cada intervalo \(C\) es constante ⇒ continua ahí. Solo hay que revisar \(t=7,10,16,19\).`},
+    {t:R_`<b>\(t=7\):</b> por la izquierda (\(t\lt7\)) vale 1 ⇒ \(\lim_{t\to7^-}C=1\). Por la derecha vale 2 ⇒ \(\lim_{t\to7^+}C=2\).`},
+    {t:R_`\(1\neq2\) ⇒ \(\lim_{t\to7}C\) <mark>no existe</mark> ⇒ falla la condición 2 ⇒ discontinua. Tipo: salto de \(|2-1|=1\).`, k:R_`Laterales finitos y distintos = discontinuidad de salto.`},
+    {t:R_`Igual: \(t=10\) (izq. 2, der. 1), \(t=16\) (1 → 2), \(t=19\) (2 → 1). Las cuatro son saltos de 1 dólar.`},
+    {t:R_`Medianoche: antes de las 24 h vale 1 y a las 0 h vale 1 ⇒ no hay salto.`, w:R_`Si cambias “\(\le\)” por “\(\lt\)” cambia \(C\) en el punto, pero los laterales siguen distintos: la discontinuidad no desaparece.`},
+    {t:R_`<b>Interpretación:</b> el precio sube o baja de golpe al empezar y terminar cada hora pico.`}],
+  ans:R_`Discontinua (salto) en \(t=7,\ 10,\ 16,\ 19\)`,
+  g:OLD['pz-peaje'].g },
+
+/* ---------------- 6 ---------------- */
+{ id:'t6', type:'fisica', src:'Taller · Ej. 6', title:'Fuerza gravitacional dentro y fuera de la Tierra',
+  st:R_`\(F(r)=\dfrac{GMr}{R^3}\) si \(r\lt R\); \(F(r)=\dfrac{GM}{r^2}\) si \(r\ge R\). (\(G,M,R\) constantes positivas, \(r\) distancia al centro.) ¿Es \(F\) continua?`,
+  steps:[
+    {t:R_`Dominio: \(r\ge0\) (es una distancia). Constantes: \(G\), \(M\), \(R\gt0\).`},
+    {t:R_`Tramo 1: \(\frac{GMr}{R^3}=\left(\frac{GM}{R^3}\right)r\): constante por \(r\) ⇒ recta ⇒ continua en \([0,R)\).`},
+    {t:R_`Tramo 2: \(\frac{GM}{r^2}\) es racional; su denominador \(r^2\) no es cero porque \(r\ge R\gt0\) ⇒ continua en \((R,\infty)\).`, q:R_`${RF('d-racional','D3')}.`},
+    {t:R_`<b>Unión \(r=R\):</b> \(F(R)\) usa el tramo con “\(\ge\)”: \(F(R)=\frac{GM}{R^2}\).`},
+    {t:R_`Por la izquierda: \(\lim_{r\to R^-}\frac{GMr}{R^3}=\frac{GMR}{R^3}=\frac{GM}{R^2}\) (simplificamos \(\frac{R}{R^3}=\frac1{R^2}\)).`},
+    {t:R_`Por la derecha: \(\lim_{r\to R^+}\frac{GM}{r^2}=\frac{GM}{R^2}\).`},
+    {t:R_`Las tres cantidades valen \(\frac{GM}{R^2}\) ⇒ continua en \(R\) ⇒ <mark>continua en \([0,\infty)\)</mark>.`, k:R_`Dos fórmulas distintas no implican discontinuidad: lo decide la unión.`},
+    {t:R_`<b>Interpretación:</b> dentro de la Tierra la fuerza crece linealmente desde 0 (centro) hasta su máximo en la superficie; afuera decrece como \(\frac1{r^2}\). Por unidad de masa, en la superficie vale \(\frac{GM}{R^2}\approx9.8\ \text{m/s}^2\).`}],
+  ans:R_`Continua en \([0,\infty)\)`,
+  g:OLD['pz-grav'].g },
+
+/* ---------------- 7 ---------------- */
+{ id:'t7', type:'parametros', src:'Taller · Ej. 7', title:'Un parámetro, una unión',
+  st:R_`\[f(x)=\begin{cases}cx^2+2x,&x\lt2\\x^3-cx,&x\ge2\end{cases}\]Halle \(c\) para que \(f\) sea continua en \(\mathbb R\).`,
+  steps:[
+    {t:R_`Ambos tramos son polinomios ⇒ continuos. Solo se revisa la unión \(x=2\).`, q:R_`${RF('d-leyes','D2')}.`},
+    {t:R_`Por la izquierda (\(x\lt2\), primer tramo), sustituimos \(x=2\): \(c(2)^2+2(2)=4c+4\).`, k:R_`Para \(x\to a^-\) se usa el tramo con “\(\lt\)”.`},
+    {t:R_`\(f(2)\) y por la derecha (\(x\ge2\), segundo tramo): \(2^3-c(2)=8-2c\).`, k:R_`El tramo con el “=” da \(f(a)\) y el límite de su lado.`},
+    {t:R_`Igualamos y despejamos:\[\begin{aligned}4c+4&=8-2c\\4c+2c&=8-4\\6c&=4\\c&=\tfrac46=\tfrac23\end{aligned}\]`},
+    {t:R_`<b>Verificar:</b> izquierda \(4\cdot\frac23+4=\frac83+\frac{12}3=\frac{20}3\); derecha \(8-2\cdot\frac23=\frac{24}3-\frac43=\frac{20}3\) ✓.`, w:R_`Respuesta exacta \(\frac23\), no 0.67.`}],
+  ans:R_`\(c=\dfrac23\)`,
+  g:OLD['pz-7'].g },
+
+/* ---------------- 8 ---------------- */
+{ id:'t8', type:'parametros', src:'Taller · Ej. 8', title:'Dos parámetros y un 0/0 escondido',
+  st:R_`\[f(x)=\begin{cases}\dfrac{x^2-4}{x-2},&x\lt2\\ax^2-bx+3,&2\le x\lt3\\2x-a+b,&x\ge3\end{cases}\]Encuentre \(a\) y \(b\).`,
+  steps:[
+    {t:R_`Primer tramo: cociente con denominador \(x-2\neq0\) para \(x\lt2\) ⇒ continuo. Los otros dos son polinomios. Uniones: \(x=2\) y \(x=3\). Dos incógnitas, dos uniones.`},
+    {t:R_`<b>Unión \(x=2\), por la izquierda.</b> Sustituir \(x=2\) en \(\frac{x^2-4}{x-2}\) da \(\frac{4-4}{2-2}=\frac00\): indeterminación.`, k:R_`Un tramo puede dar \(\frac00\) justo en la unión: hay que simplificar antes de igualar.`},
+    {t:R_`Factorizamos con diferencia de cuadrados \(x^2-2^2=(x-2)(x+2)\):\[\lim_{x\to2^-}\frac{(x-2)(x+2)}{x-2}=\lim_{x\to2^-}(x+2)=4\]`, q:R_`Se puede cancelar \(x-2\) porque en el límite \(x\neq2\) (el límite no mira \(x=2\), ver ${RF('t9','Ej. 9')}).`},
+    {t:R_`Comprobación numérica:`+TB(['\\(x\\)','1.9','1.99','1.999'],[['\\(f(x)\\)','3.9','3.99','3.999']])},
+    {t:R_`\(f(2)\) usa el tramo medio (\(2\le x\)): \(a(2)^2-b(2)+3=4a-2b+3\). Igualamos con 4:\[4a-2b+3=4\Rightarrow4a-2b=1\quad\textbf{(E1)}\]`},
+    {t:R_`<b>Unión \(x=3\).</b> Por la izquierda (tramo medio): \(9a-3b+3\). \(f(3)\) (tramo \(x\ge3\)): \(2(3)-a+b=6-a+b\).`},
+    {t:R_`Igualamos y ordenamos:\[\begin{aligned}9a-3b+3&=6-a+b\\9a+a-3b-b&=6-3\\10a-4b&=3\quad\textbf{(E2)}\end{aligned}\]`},
+    {t:R_`<b>Resolver:</b> multiplicamos (E1) por 2: \(8a-4b=2\). Restamos de (E2): \((10a-4b)-(8a-4b)=3-2\Rightarrow2a=1\Rightarrow a=\frac12\).`, k:R_`Multiplica para que una incógnita tenga el mismo coeficiente y luego resta.`},
+    {t:R_`En (E1): \(4\cdot\frac12-2b=1\Rightarrow2-2b=1\Rightarrow-2b=-1\Rightarrow b=\frac12\).`},
+    {t:R_`<b>Verificar:</b> tramo medio \(\frac12x^2-\frac12x+3\). En 2: \(2-1+3=4\) ✓. En 3: \(4.5-1.5+3=6\); último tramo en 3: \(6-\frac12+\frac12=6\) ✓.`}],
+  ans:R_`\(a=\dfrac12,\ b=\dfrac12\)`,
+  g:OLD['pz-8'].g },
+
+/* ---------------- 9 ---------------- */
+{ id:'t9', type:'redefinir', src:'Taller · Ej. 9', title:'¿Límite L y f(a) = M ≠ L?',
+  st:R_`Si \(\lim_{x\to a}f(x)=L\), ¿es posible que \(f(a)=M\) con \(M\neq L\)? Explique.`,
+  steps:[
+    {t:R_`Recordemos la definición: \(\lim_{x\to a}f(x)=L\) si para todo \(\varepsilon\gt0\) existe \(\delta\gt0\) tal que \(\mathbf{0\lt}|x-a|\lt\delta\Rightarrow|f(x)-L|\lt\varepsilon\).`},
+    {t:R_`El “\(0\lt|x-a|\)” significa \(x\neq a\): la definición <mark>nunca usa \(f(a)\)</mark>. Por eso \(f(a)\) puede ser cualquier número, o no existir.`, k:R_`El límite mira el camino (los \(x\) cercanos), no el destino (\(f(a)\)).`},
+    {t:R_`<b>Respuesta: sí es posible.</b> Ejemplo: \(f(x)=\begin{cases}x^2,&x\neq1\\5,&x=1\end{cases}\)`},
+    {t:R_`Cerca de 1 (sin tocarlo) \(f(x)=x^2\):`+TB(['\\(x\\)','0.9','0.99','1.01','1.1'],[['\\(f(x)\\)','0.81','0.9801','1.0201','1.21']])+R_`⇒ \(\lim_{x\to1}f=1=L\). Pero \(f(1)=5=M\).`},
+    {t:R_`Revisamos las 3 condiciones: (1) \(f(1)=5\) existe ✓; (2) el límite existe (\(=1\)) ✓; (3) \(1\neq5\) ✗. ⇒ <b>no es continua</b>.`},
+    {t:R_`Tipo: discontinuidad <b>evitable</b>; se arregla redefiniendo \(f(1)=1\).`},
+    {t:R_`Si \(f\) fuera continua en \(a\), sería imposible: continuidad significa justamente \(\lim_{x\to a}f(x)=f(a)\).`, w:R_`“No, porque el límite es el valor de la función” solo es cierto para funciones continuas.`}],
+  ans:R_`Sí; en ese caso hay una discontinuidad evitable en \(a\)`,
+  g:{x:[-2,3], y:[-1,6], pieces:[{f:x=>x*x, a:-3, b:4}], dots:[{x:1,y:1,open:true},{x:1,y:5,c:'warn'}]} },
+
+/* ---------------- 10 ---------------- */
+{ id:'t10', type:'redefinir', src:'Taller · Ej. 10', title:'Discontinuidades y redefinición',
+  st:R_`Encuentre las discontinuidades y, si es posible, redefina para que sea continua: a) \(f(x)=\dfrac{x-3}{x^2-9}\) &nbsp; b) \(f(x)=\dfrac{x^2-7x+12}{x-3}\)`,
+  steps:[
+    {t:R_`<b>a) Candidatos:</b> donde el denominador es 0: \(x^2-9=0\Rightarrow x^2=9\Rightarrow x=3\) o \(x=-3\). En el resto es racional ⇒ continua.`, q:R_`${RF('d-racional','D3')}.`},
+    {t:R_`Factorizamos el denominador (diferencia de cuadrados): \(x^2-9=x^2-3^2=(x-3)(x+3)\).`},
+    {t:R_`Simplificamos para \(x\neq\pm3\): \(\dfrac{x-3}{(x-3)(x+3)}=\dfrac{1}{x+3}\).`, k:R_`Si el factor <b>se cancela</b> ⇒ evitable. Si <b>queda abajo</b> ⇒ infinita.`},
+    {t:R_`<b>En \(x=3\):</b> \(\lim_{x\to3}\frac1{x+3}=\frac16\). El límite existe pero \(f(3)\) no ⇒ <mark>evitable</mark>.`},
+    {t:R_`<b>En \(x=-3\):</b> queda \(\frac1{x+3}\) con denominador \(\to0\). Si \(x\to-3^+\) (p. ej. \(-2.99\)): \(x+3=0.01\gt0\Rightarrow+\infty\). Si \(x\to-3^-\) (\(-3.01\)): \(x+3=-0.01\Rightarrow-\infty\). <mark>Infinita</mark> (asíntota).`},
+    {t:R_`Redefinición: \(F(x)=\begin{cases}\frac{x-3}{x^2-9},&x\neq\pm3\\\frac16,&x=3\end{cases}\), continua en \(\mathbb R\setminus\{-3\}\).`, w:R_`No es posible hacerla continua en todo \(\mathbb R\): en \(-3\) el límite es infinito. Hay que decirlo.`},
+    {t:R_`<b>b) Candidato:</b> \(x-3=0\Rightarrow x=3\).`},
+    {t:R_`Factorizar \(x^2-7x+12\): dos números que multiplicados den \(12\) y sumados den \(-7\): \(-3\) y \(-4\). ⇒ \((x-3)(x-4)\).`, k:R_`Trinomio \(x^2+Sx+P\): busca dos números con producto \(P\) y suma \(S\).`},
+    {t:R_`Para \(x\neq3\): \(\dfrac{(x-3)(x-4)}{x-3}=x-4\). \(\lim_{x\to3}(x-4)=-1\) ⇒ evitable.`},
+    {t:R_`Redefinición: \(F(x)=x-4\) para todo \(x\) (equivale a poner \(F(3)=-1\)). Es un polinomio ⇒ continua en \(\mathbb R\).`}],
+  ans:R_`a) evitable en 3 (\(F(3)=\frac16\)); infinita en −3. b) evitable en 3; \(F(x)=x-4\)`,
+  g:{x:[-7,6], y:[-3,3], pieces:[{f:x=>1/(x+3), a:-8, b:-3},{f:x=>1/(x+3), a:-3, b:7}], vlines:[{x:-3,c:'warn'}], dots:[{x:3,y:1/6,open:true}]} },
+
+/* ---------------- 11 ---------------- */
+{ id:'t11', type:'redefinir', src:'Taller · Ej. 11', title:'Raíz y 0/0: el conjugado',
+  st:R_`\(f(x)=\dfrac{x-1}{\sqrt x-1}\). Encuentre dónde es discontinua y, si es posible, redefínala.`,
+  steps:[
+    {t:R_`<b>Dominio.</b> Raíz: \(x\ge0\). Denominador: \(\sqrt x-1\neq0\Rightarrow\sqrt x\neq1\Rightarrow x\neq1\). Dominio: \([0,1)\cup(1,\infty)\).`},
+    {t:R_`En su dominio es cociente de continuas ⇒ continua. El único punto a analizar es \(x=1\).`, q:R_`Raíz continua (${RF('d-raiz','D4')}) y cociente (${RF('d-racional','D3')}).`},
+    {t:R_`Sustituir \(x=1\): \(\frac{1-1}{\sqrt1-1}=\frac00\): indeterminación con raíz.`, k:R_`Raíz + \(\frac00\) ⇒ multiplica por el conjugado.`},
+    {t:R_`El conjugado de \(\sqrt x-1\) es \(\sqrt x+1\). Multiplicamos arriba y abajo (es multiplicar por 1):\[\frac{x-1}{\sqrt x-1}\cdot\frac{\sqrt x+1}{\sqrt x+1}\]`},
+    {t:R_`Denominador (diferencia de cuadrados): \((\sqrt x-1)(\sqrt x+1)=(\sqrt x)^2-1^2=x-1\).`},
+    {t:R_`Queda \(\dfrac{(x-1)(\sqrt x+1)}{x-1}=\sqrt x+1\) para \(x\neq1\).`},
+    {t:R_`\(\lim_{x\to1}(\sqrt x+1)=\sqrt1+1=2\).`+TB(['\\(x\\)','0.9','0.99','1.01','1.1'],[['\\(f(x)\\)','1.949','1.995','2.005','2.049']])},
+    {t:R_`El límite existe ⇒ <mark>evitable</mark>. Redefinición: \(F(x)=\sqrt x+1\) para \(x\ge0\) (es decir, \(F(1)=2\)).`},
+    {t:R_`<span class="m">Otras formas:</span> \(x-1=(\sqrt x-1)(\sqrt x+1)\) directamente; o \(u=\sqrt x\Rightarrow\frac{u^2-1}{u-1}=u+1\to2\).`},
+    {t:R_`\(F\) es continua en \([0,\infty)\) (por la derecha en 0).`, w:R_`No puede ser continua en todo \(\mathbb R\): para \(x\lt0\) no existe. Fuera del dominio no se habla de continuidad.`}],
+  ans:R_`Discontinua solo en \(x=1\); \(F(x)=\sqrt x+1\) en \([0,\infty)\)`,
+  g:OLD['pz-11'].g },
+
+/* ---------------- 12 ---------------- */
+ext('t12', {}),
+
+/* ---------------- 13 ---------------- */
+{ id:'t13', type:'parametros', src:'Taller · Ej. 13', title:'La incógnita es el punto de unión',
+  st:R_`\[f(x)=\begin{cases}x+1,&x\le a\\x^2,&x\gt a\end{cases}\]Encuentre <b>todos</b> los valores de \(a\) para que \(f\) sea continua.`,
+  steps:[
+    {t:R_`Aquí \(a\) no es un coeficiente: es <mark>el lugar donde se cambia de fórmula</mark>.`},
+    {t:R_`Fuera de \(x=a\) cada tramo es polinomio ⇒ continuo. Solo se revisa \(x=a\).`},
+    {t:R_`\(f(a)\) y \(\lim^-\): tramo \(x\le a\) ⇒ \(a+1\). \(\lim^+\): tramo \(x\gt a\) ⇒ \(a^2\).`, k:R_`Evalúa ambos tramos en \(x=a\) e iguala.`},
+    {t:R_`Condición: \(a^2=a+1\iff a^2-a-1=0\).`},
+    {t:R_`Fórmula general con coeficientes \(1,-1,-1\):\[a=\frac{-(-1)\pm\sqrt{(-1)^2-4(1)(-1)}}{2(1)}=\frac{1\pm\sqrt{5}}{2}\]`},
+    {t:R_`\(a_1=\frac{1+\sqrt5}2\approx1.618\), \(a_2=\frac{1-\sqrt5}2\approx-0.618\).`, w:R_`“Todos los valores”: las dos raíces sirven.`},
+    {t:R_`Verificar \(a_1\): \(a_1+1\approx2.618\) y \(a_1^2\approx2.618\) ✓. (\(a_2\): \(0.382\) y \(0.382\) ✓.)`},
+    {t:R_`Gráficamente: son los dos puntos donde se cruzan la recta \(y=x+1\) y la parábola \(y=x^2\). Si cambias de fórmula justo en un cruce, no hay salto.`}],
+  ans:R_`\(a=\dfrac{1+\sqrt5}{2}\) o \(a=\dfrac{1-\sqrt5}{2}\)`,
+  g:OLD['pz-13'].g },
+
+/* ---------------- 14 ---------------- */
+{ id:'t14', type:'parametros', src:'Taller · Ej. 14', title:'Hallar c y d (conjugado y límites laterales)',
+  st:R_`\[f(x)=\begin{cases}c,&x=-3\\[1mm]\dfrac{9-x^2}{4-\sqrt{x^2+7}},&|x|\lt3\\[2mm]d,&x=3\end{cases}\]Encuentre \(c\) y \(d\) para que \(f\) sea continua.`,
+  steps:[
+    {t:R_`<b>Leer \(|x|\lt3\).</b> \(|x|\) es la distancia de \(x\) al 0. “Distancia menor que 3” significa estar entre \(-3\) y \(3\): \(|x|\lt3\iff-3\lt x\lt3\).`, k:R_`\(|x|\lt k\iff-k\lt x\lt k\).`},
+    {t:R_`<b>¿Dónde está definida \(f\)?</b> En \(x=-3\) (vale \(c\)), en \((-3,3)\) (la fracción) y en \(x=3\) (vale \(d\)). Dominio: \([-3,3]\). Fuera de ahí no existe.`},
+    {t:R_`Por eso “continua” significa continua en \([-3,3]\): (i) en todo \((-3,3)\); (ii) por la derecha en \(-3\); (iii) por la izquierda en \(3\).`, k:R_`En los extremos de un intervalo cerrado se usan límites <b>laterales</b>, desde adentro.`, w:R_`No busques el límite bilateral en \(\pm3\): del otro lado la función no existe.`},
+    {t:R_`<b>(i) Interior.</b> Numerador \(9-x^2\): polinomio. Denominador: \(x^2+7\ge7\gt0\), así que \(\sqrt{x^2+7}\) existe y es continua; \(4-\sqrt{x^2+7}\) es continua.`, q:R_`Raíz continua (${RF('d-raiz','D4')}) compuesta con un polinomio (${RF('d-comp','D10')}); cociente continuo donde el denominador ≠ 0 (${RF('d-racional','D3')}).`},
+    {t:R_`¿Cuándo se anula el denominador?\[\begin{aligned}4-\sqrt{x^2+7}&=0\\\sqrt{x^2+7}&=4\\x^2+7&=16\quad(\text{elevando al cuadrado})\\x^2&=9\Rightarrow x=\pm3\end{aligned}\]Esos puntos <b>no</b> están en \((-3,3)\) ⇒ la fracción es continua en todo el interior.`},
+    {t:R_`<b>(iii) Extremo \(x=3\).</b> Intentamos sustituir: numerador \(9-3^2=0\); denominador \(4-\sqrt{9+7}=4-\sqrt{16}=4-4=0\). Sale <mark>\(\frac00\)</mark>: hay que transformar.`, k:R_`\(\frac00\) con raíces ⇒ multiplicar por el conjugado.`},
+    {t:R_`El denominador tiene la forma \(A-\sqrt B\) con \(A=4\), \(B=x^2+7\). Su <b>conjugado</b> es \(4+\sqrt{x^2+7}\) (mismo, con el signo del medio cambiado). Multiplicamos arriba y abajo por él:\[\frac{9-x^2}{4-\sqrt{x^2+7}}\cdot\frac{4+\sqrt{x^2+7}}{4+\sqrt{x^2+7}}\]`, q:R_`Multiplicar arriba y abajo por lo mismo es multiplicar por 1: no cambia el valor. Se puede porque \(4+\sqrt{x^2+7}\ge4+\sqrt7\gt0\) nunca es cero.`},
+    {t:R_`<b>Denominador:</b> diferencia de cuadrados \((a-b)(a+b)=a^2-b^2\) con \(a=4\), \(b=\sqrt{x^2+7}\):\[\begin{aligned}(4-\sqrt{x^2+7})(4+\sqrt{x^2+7})&=4^2-\big(\sqrt{x^2+7}\big)^2\\&=16-(x^2+7)\\&=16-x^2-7\\&=9-x^2\end{aligned}\]`, k:R_`\((\sqrt B)^2=B\): el conjugado elimina la raíz del denominador.`},
+    {t:R_`<b>Numerador:</b> lo dejamos indicado: \((9-x^2)(4+\sqrt{x^2+7})\). Entonces:\[f(x)=\frac{(9-x^2)\,(4+\sqrt{x^2+7})}{9-x^2}\]`},
+    {t:R_`Para \(-3\lt x\lt3\) se tiene \(x^2\lt9\), o sea \(9-x^2\neq0\): podemos cancelarlo.\[f(x)=4+\sqrt{x^2+7}\qquad(-3\lt x\lt3)\]`, q:R_`Cancelar es válido porque en el límite \(x\neq\pm3\): el límite no usa el valor en el extremo (${RF('t9','Ej. 9')}).`, k:R_`El factor que causaba el 0/0 (\(9-x^2\)) aparece arriba y abajo: se cancela.`},
+    {t:R_`Ahora la expresión \(4+\sqrt{x^2+7}\) es continua (suma de constante y raíz de polinomio), así que <mark>ya se puede sustituir</mark>:\[\lim_{x\to3^-}f(x)=4+\sqrt{3^2+7}=4+\sqrt{16}=4+4=8\]`},
+    {t:R_`Comprobación numérica con la fórmula original:`+TB(['\\(x\\)','2.9','2.99','2.999'],[['\\(f(x)\\)','7.9256','7.9925','7.9993']])+R_`Se acerca a 8 ✓.`},
+    {t:R_`Continuidad por la izquierda en 3 exige \(f(3)=\lim_{x\to3^-}f\): \(\boxed{d=8}\).`},
+    {t:R_`<b>(ii) Extremo \(x=-3\).</b> La misma simplificación vale en todo \((-3,3)\). Como \((-3)^2=9\):\[\lim_{x\to-3^+}f(x)=4+\sqrt{(-3)^2+7}=4+\sqrt{16}=8\]`, k:R_`La función depende de \(x^2\) (es par): lo que pasa en \(3\) se repite en \(-3\).`},
+    {t:R_`Continuidad por la derecha en \(-3\) exige \(f(-3)=8\): \(\boxed{c=8}\).`},
+    {t:R_`<span class="m">Otra forma (cambio de variable):</span> \(u=\sqrt{x^2+7}\Rightarrow x^2=u^2-7\Rightarrow9-x^2=16-u^2=(4-u)(4+u)\). La fracción es \(\frac{(4-u)(4+u)}{4-u}=4+u\to4+4=8\).`},
+    {t:R_`<b>Conclusión:</b> con \(c=d=8\), \(f\) es continua en \([-3,3]\), su dominio completo. Su gráfica es la curva \(y=4+\sqrt{x^2+7}\) entre \((-3,8)\) y \((3,8)\), con los extremos llenos.`}],
+  ans:R_`\(c=d=8\)`,
+  g:{x:[-4,4], y:[0,10], ystep:2, pieces:[{f:x=>4+Math.sqrt(x*x+7), a:-3, b:3, ca:true, cb:true}], vlines:[{x:-3},{x:3}]} },
+
+/* ---------------- 15 ---------------- */
+{ id:'t15', type:'redefinir', src:'Taller · Ej. 15', title:'El límite no coincide con el valor',
+  st:R_`\(g(h)=\dfrac{(1+h)^3-1}{h}\) si \(h\neq0\); \(g(0)=0\). Determine si \(g\) es continua; si no, modifíquela.`,
+  steps:[
+    {t:R_`Para \(h\neq0\), \(g\) es un cociente de polinomios con denominador \(h\neq0\) ⇒ continua. Solo se analiza \(h=0\).`},
+    {t:R_`Sustituir \(h=0\) en la fórmula da \(\frac{1-1}{0}=\frac00\): hay que transformar.`},
+    {t:R_`Expandimos con \((a+b)^3=a^3+3a^2b+3ab^2+b^3\), \(a=1\), \(b=h\):\[(1+h)^3=1+3h+3h^2+h^3\]`, w:R_`\((1+h)^3\neq1+h^3\): faltan los términos del medio.`},
+    {t:R_`Restamos 1 y sacamos factor común \(h\):\[\frac{(1+h)^3-1}{h}=\frac{3h+3h^2+h^3}{h}=\frac{h(3+3h+h^2)}{h}=3+3h+h^2\]`},
+    {t:R_`\(\lim_{h\to0}(3+3h+h^2)=3\).`+TB(['\\(h\\)','0.1','0.01','−0.01'],[['\\(g(h)\\)','3.31','3.0301','2.9701']])},
+    {t:R_`Condiciones en 0: (1) \(g(0)=0\) existe ✓; (2) límite \(=3\) existe ✓; (3) \(3\neq0\) ✗ ⇒ <mark>no es continua</mark> (evitable).`, k:R_`Límite existe pero distinto del valor ⇒ falla la condición 3.`},
+    {t:R_`Modificación: \(g(0)=3\). Así \(g(h)=3+3h+h^2\) para todo \(h\): polinomio ⇒ continua en \(\mathbb R\).`},
+    {t:R_`<span class="m">Otra forma:</span> diferencia de cubos con \(A=1+h\), \(B=1\): \(A^3-B^3=(A-B)(A^2+AB+B^2)\), y \(A-B=h\) ⇒ \((1+h)^2+(1+h)+1\to3\).`},
+    {t:R_`<span class="m">Dato:</span> es la pendiente de la recta tangente a \(y=x^3\) en \(x=1\) (lo verás en derivadas: \(3x^2=3\)).`}],
+  ans:R_`No es continua en 0; se corrige con \(g(0)=3\)`,
+  g:OLD['pz-15'].g },
+
+/* ---------------- 16 ---------------- */
+{ id:'t16', type:'composicion', src:'Taller · Ej. 16', title:'Charco de aceite',
+  st:R_`\(r(t)=9t^2\) si \(0\le t\le2\); \(r(t)=16t+4\) si \(t\gt2\) (\(t\) en minutos). a) ¿Por qué se modela por partes? b) Analice la continuidad del área.`,
+  steps:[
+    {t:R_`<b>a)</b> Primeros 2 min: \(r=9t^2\) crece cada vez más rápido (la fuga aumenta). Después: \(r=16t+4\) crece 16 unidades por minuto, ritmo constante (el derrame se estabiliza). Son dos regímenes ⇒ dos fórmulas.`},
+    {t:R_`<b>b) Continuidad de \(r\) en \(t=2\).</b> \(r(2)\) usa \(t\le2\): \(9(2)^2=9\cdot4=36\). Por la derecha: \(16(2)+4=36\). Iguales ⇒ \(r\) continua.`, k:R_`Primero revisa \(r\); el área depende de \(r\).`},
+    {t:R_`Área de un círculo: \(A=\pi r^2\). Por tramos:\[A(t)=\begin{cases}\pi(9t^2)^2=81\pi t^4,&0\le t\le2\\\pi(16t+4)^2,&t\gt2\end{cases}\]`, q:R_`\((9t^2)^2=81t^4\) porque \((ab)^2=a^2b^2\) y \((t^2)^2=t^4\).`},
+    {t:R_`Cada tramo es un polinomio ⇒ continuo en su intervalo.`},
+    {t:R_`En \(t=2\): \(A(2)=81\pi\cdot2^4=81\pi\cdot16=1296\pi\). Por la derecha: \(\pi(36)^2=1296\pi\). Iguales ⇒ continua en 2.`},
+    {t:R_`En \(t=0\) (borde): \(\lim_{t\to0^+}A=0=A(0)\) ⇒ continua por la derecha.`},
+    {t:R_`<span class="m">Forma corta:</span> \(A=G\circ r\) con \(G(x)=\pi x^2\) continua; \(r\) continua ⇒ \(A\) continua.`, q:R_`${RF('d-comp','D10')}.`},
+    {t:R_`<b>Conclusión:</b> \(A\) es continua en \([0,\infty)\). A los 2 min, \(A=1296\pi\approx4071.5\) u².`}],
+  ans:R_`\(A(t)\) continua en \([0,\infty)\)`,
+  g:{x:[0,4], y:[0,5000], ystep:1000, xstep:0.5, pieces:[{f:t=>81*t**4, a:0, b:2, ca:true, cb:true},{f:t=>(16*t+4)**2, a:2, b:5, c:'ink'}]} },
+
+/* ---------------- 17 ---------------- */
+{ id:'t17', type:'parametros', src:'Taller · Ej. 17', title:'La longitud de la viga',
+  st:R_`\[w(x)=\begin{cases}1000\left(1-\frac{2x}{L}\right),&0\lt x\le\frac L2\\0,&\frac L2\lt x\le\frac{3L}4\\500\left(2-\frac43Lx\right),&\frac{3L}4\lt x\le L\end{cases}\]¿Qué \(L\) hace que la carga sea continua en su dominio?`,
+  steps:[
+    {t:R_`Con \(L\) fijo, cada tramo es un polinomio en \(x\) ⇒ continuo. Uniones: \(x=\frac L2\) y \(x=\frac{3L}4\).`, k:R_`Los puntos de unión dependen de \(L\): se evalúa en \(\frac L2\) y \(\frac{3L}4\), no en números fijos.`},
+    {t:R_`<b>Unión \(\frac L2\).</b> \(w(\frac L2)\) (primer tramo): \(1000\left(1-\frac{2\cdot L/2}{L}\right)=1000(1-1)=0\). Por la derecha (tramo 0): 0. ✓ para cualquier \(L\).`},
+    {t:R_`<b>Unión \(\frac{3L}4\).</b> \(w(\frac{3L}4)\) (segundo tramo): 0. Por la derecha (tercer tramo), sustituimos \(x=\frac{3L}4\):`},
+    {t:R_`\[\frac43L\cdot\frac{3L}4=\frac{4\cdot3\,L^2}{3\cdot4}=L^2\ \Rightarrow\ \lim_{x\to\frac{3L}4^+}w=500\,(2-L^2)\]`},
+    {t:R_`Continuidad: \(500(2-L^2)=0\Rightarrow2-L^2=0\Rightarrow L^2=2\Rightarrow L=\pm\sqrt2\).`},
+    {t:R_`Una longitud es positiva ⇒ \(L=\sqrt2\approx1.41\).`, w:R_`Escribe por qué descartas \(-\sqrt2\).`},
+    {t:R_`<b>Verificar:</b> con \(L=\sqrt2\), \(500(2-(\sqrt2)^2)=500(2-2)=0\) ✓.`},
+    {t:R_`<span class="m">Nota:</span> si el tercer tramo fuera \(500\left(2-\frac{4x}{3L}\right)\), en \(\frac{3L}4\) daría \(500(2-1)=500\neq0\) para todo \(L\): nunca sería continua. Con el enunciado tal como está, \(L=\sqrt2\).`}],
+  ans:R_`\(L=\sqrt2\)`,
+  g:OLD['pz-17'].g },
+
+/* ---------------- 18 ---------------- */
+{ id:'t18', type:'fisica', src:'Taller · Ej. 18', title:'Charles: construir el modelo desde el texto',
+  st:R_`“El volumen de un gas a 0 °C y presión constante varía en \(\frac1{273}\) de su volumen a 0 °C por cada grado.” a) Función. b) \(\lim_{T\to-273}\). c) Laterales y bilateral. d) ¿Qué es −273 °C?`,
+  steps:[
+    {t:R_`<b>Traducir.</b> Llamamos \(V_0\) al volumen a 0 °C. “Varía \(\frac1{273}\) de \(V_0\) por cada grado”: si \(T\) sube 1 °C, \(V\) sube \(\frac{V_0}{273}\).`, k:R_`Cambio constante por unidad ⇒ modelo lineal \(y=y_0+m\,x\).`},
+    {t:R_`Es una recta con pendiente \(m=\frac{V_0}{273}\) que pasa por \((0,V_0)\): \(V(T)=V_0+\frac{V_0}{273}T=V_0\left(1+\frac T{273}\right)\). <b>(a)</b>`},
+    {t:R_`<b>b)</b> Recta ⇒ continua ⇒ sustituir: \(V_0\left(1-\frac{273}{273}\right)=0\).`},
+    {t:R_`<b>c) Por la derecha:</b> \(\lim_{T\to-273^+}V=0\): el gas se enfría desde temperaturas mayores. Tiene sentido físico.`},
+    {t:R_`<b>Por la izquierda:</b> la fórmula da 0, pero para \(T\lt-273\) saldría \(V\lt0\). Esas temperaturas no existen: en el modelo físico (dominio \([-273,\infty)\)) no hay puntos a la izquierda.`, k:R_`Un lateral sin sentido físico se descarta <b>explicando por qué</b>.`},
+    {t:R_`<b>Bilateral:</b> en la fórmula pura existe y vale 0; en el modelo físico se toma el lateral derecho, \(=0\).`},
+    {t:R_`<b>d)</b> −273 °C = 0 K, el cero absoluto: la temperatura más baja posible.`}],
+  ans:R_`\(V=V_0(1+T/273)\); \(\lim_{T\to-273^+}V=0\)`,
+  g:OLD['pz-charles'].g },
+
+/* ---------------- 19 ---------------- */
+{ id:'t19', type:'parametros', src:'Taller · Ej. 19', title:'Reactor: más incógnitas que uniones',
+  st:R_`\[T(t)=\begin{cases}2t^3-9t^2+12t+k,&t\lt3\\at^2+bt+c,&3\le t\le5\\60+\frac{40}{t},&t\gt5\end{cases}\]a) Interprete cada parte. b) Reescriba la función para que sea continua.`,
+  steps:[
+    {t:R_`<b>a) Primer tramo:</b> evaluamos: \(T(0)=k\); \(T(1)=2-9+12+k=k+5\); \(T(2)=16-36+24+k=k+4\); \(T(3)=54-81+36+k=k+9\).`},
+    {t:R_`Sube de \(k\) a \(k+5\), baja un poco a \(k+4\) y vuelve a subir: <mark>arranque con un ajuste del control</mark>; \(k\) es la temperatura inicial.`},
+    {t:R_`Tramo medio: parábola, transición controlada. Último: \(60+\frac{40}t\) disminuye y \(\lim_{t\to\infty}\left(60+\frac{40}t\right)=60\) (porque \(\frac{40}t\to0\)): se estabiliza en 60 °C.`, k:R_`Límite al infinito constante = régimen estable (asíntota horizontal).`},
+    {t:R_`<b>b) Unión \(t=3\).</b> Por la izquierda: \(9+k\) (calculado arriba). \(T(3)\) (tramo medio): \(9a+3b+c\). ⇒ \(9a+3b+c=9+k\). <b>(E1)</b>`},
+    {t:R_`<b>Unión \(t=5\).</b> \(T(5)\) (tramo medio): \(25a+5b+c\). Por la derecha: \(60+\frac{40}5=60+8=68\). ⇒ \(25a+5b+c=68\). <b>(E2)</b>`},
+    {t:R_`4 incógnitas (\(a,b,c,k\)) y 2 ecuaciones ⇒ <mark>infinitas soluciones</mark>: dos quedan libres.`, k:R_`Más incógnitas que uniones: despeja en función de las libres y da un ejemplo.`},
+    {t:R_`De (E2): \(c=68-25a-5b\). En (E1):\[\begin{aligned}9+k&=9a+3b+68-25a-5b\\9+k&=68-16a-2b\\k&=59-16a-2b\end{aligned}\]`},
+    {t:R_`Ejemplo simple: \(a=b=0\Rightarrow c=68,\ k=59\). Verificar: en 3, \(9+59=68\) ✓; en 5, \(68\) ✓.\[T(t)=\begin{cases}2t^3-9t^2+12t+59,&t\lt3\\68,&3\le t\le5\\60+\frac{40}{t},&t\gt5\end{cases}\]`, w:R_`No digas “no tiene solución”: tiene infinitas.`},
+    {t:R_`<span class="m">Extra (sin cambios bruscos de pendiente):</span> igualando también pendientes: \(a=-3.4,\ b=32.4,\ c=-9,\ k=48.6\).`}],
+  ans:R_`\(c=68-25a-5b,\ k=59-16a-2b\); p. ej. \(a=b=0,\ c=68,\ k=59\)`,
+  g:OLD['pz-19'].g }
+];
+// el 12 ya viene detallado desde TALLER (se reutiliza)
+TALLER_FULL[11] = TALLER.find(x => x.id === 't12');
+
+/* ---------- Prueba 2 y horno con todos los pasos ---------- */
+const PRUEBA_FULL = [
+{ id:'pz-piscina-a', type:'geometria', src:'Prueba 2 · Ej. 1a', title:'Piscina: distancia entre lados',
+  st:R_`Un nadador cruza en línea recta desde una esquina hasta un punto del borde largo opuesto, a distancia horizontal igual al <b>doble</b> del borde corto. a) Distancia vertical desde el lado largo más cercano al nadador hasta el lado largo de la esquina de partida, en función del desplazamiento horizontal. Analice la continuidad.`,
+  steps:[
+    {t:R_`<b>Dibujar y poner ejes:</b> origen en la esquina de salida; eje \(x\) sobre el lado largo de abajo; eje \(y\) hacia arriba.`, k:R_`Siempre: dibujo + ejes + nombres de las constantes.`},
+    {t:R_`Constante: lado corto (ancho) \(=a\). El lado de arriba es la recta \(y=a\). Llegada: “doble del borde corto” ⇒ horizontal \(2a\): punto \((2a,\,a)\).`},
+    {t:R_`Trayectoria: recta de \((0,0)\) a \((2a,a)\). Pendiente \(\frac{a-0}{2a-0}=\frac12\) ⇒ altura del nadador \(y=\frac x2\). Variable: \(x\in[0,2a]\).`},
+    {t:R_`Distancia del nadador al lado de abajo: \(y=\frac x2\). Al de arriba: \(a-\frac x2\). ¿Cuándo son iguales? \(\frac x2=a-\frac x2\Rightarrow x=a\) (mitad del recorrido).`},
+    {t:R_`Si \(x\lt a\): \(\frac x2\lt\frac a2\), está en la mitad de abajo ⇒ el lado más cercano es el de <b>abajo</b>. Si \(x\gt a\): el de <b>arriba</b>.`},
+    {t:R_`Distancia de ese lado al lado de partida (abajo): si es el de abajo, 0; si es el de arriba, \(a\).\[D(x)=\begin{cases}0,&0\le x\lt a\\a,&a\lt x\le2a\end{cases}\]`, w:R_`Es la distancia entre <b>dos lados</b>, no entre el nadador y un lado.`},
+    {t:R_`En \(x=a\) ambos lados están igual de cerca: puedes definir \(D(a)=0\) o \(D(a)=a\) (dilo). El análisis no cambia.`},
+    {t:R_`Continuidad: en \([0,a)\) y \((a,2a]\) es constante ⇒ continua. En \(x=a\): \(\lim_{x\to a^-}D=0\), \(\lim_{x\to a^+}D=a\). \(0\neq a\) ⇒ el límite no existe.`},
+    {t:R_`<b>Conclusión:</b> discontinuidad <mark>de salto</mark> (tamaño \(a\)) en \(x=a\). <b>Interpretación:</b> a mitad del recorrido el lado más cercano cambia de golpe, aunque el nadador se mueve sin saltos.`}],
+  ans:R_`Salto en \(x=a\)`, g:OLD['pz-piscina-a'].g },
+{ id:'pz-piscina-b', type:'geometria', src:'Prueba 2 · Ej. 1b', title:'Piscina: distancia del nadador al borde',
+  st:R_`b) Distancia vertical desde el nadador al borde largo más cercano, en función del desplazamiento horizontal. Analice e interprete la continuidad.`,
+  steps:[
+    {t:R_`Del literal a): altura \(y=\frac x2\); distancia abajo \(\frac x2\); distancia arriba \(a-\frac x2\); se igualan en \(x=a\).`},
+    {t:R_`“Borde más cercano” = la <mark>menor</mark> de las dos distancias: \(d(x)=\min\left(\frac x2,\ a-\frac x2\right)\).`, k:R_`“Más cercano” ⇒ mínimo ⇒ función a trozos.`},
+    {t:R_`Para \(x\le a\): \(\frac x2\le\frac a2\le a-\frac x2\) ⇒ la menor es \(\frac x2\). Para \(x\gt a\): la menor es \(a-\frac x2\).\[d(x)=\begin{cases}\frac x2,&0\le x\le a\\a-\frac x2,&a\lt x\le2a\end{cases}\]`},
+    {t:R_`Cada tramo es lineal ⇒ continuo. En \(x=a\): \(d(a)=\frac a2\); \(\lim^-=\frac a2\); \(\lim^+=a-\frac a2=\frac a2\). Iguales ✓.`},
+    {t:R_`Extremos: \(d(0)=0\) y \(d(2a)=a-a=0\), continuidad lateral ✓. <b>\(d\) es continua en \([0,2a]\)</b>.`},
+    {t:R_`<b>Interpretación:</b> el nadador no salta, así que su distancia al borde tampoco: sube de 0 a \(\frac a2\) (en el centro) y baja a 0.`, w:R_`El “pico” en \(x=a\) es una esquina, no una discontinuidad.`}],
+  ans:R_`Continua en \([0,2a]\)`, g:OLD['pz-piscina-b'].g },
+{ id:'pz-disco', type:'epsdelta', src:'Prueba 2 · Ej. 2', title:'Discos de 1000 cm² ± 5 %',
+  st:R_`Cada disco debe tener área 1000 cm², con tolerancia ±5 %. a) Escriba el límite. b) Tradúzcalo. c) Definición ε–δ en la situación; valores de \(\delta\) y \(\varepsilon\), justificando \(\delta\).`,
+  steps:[
+    {t:R_`<b>Entrada y salida.</b> La máquina controla el radio \(r\) (entrada). Se mide el área \(A(r)=\pi r^2\) (salida).`, k:R_`\(\varepsilon\) = tolerancia de la <b>salida</b>; \(\delta\) = tolerancia de la <b>entrada</b>.`},
+    {t:R_`Radio ideal: \(\pi r_0^2=1000\Rightarrow r_0^2=\frac{1000}\pi\approx318.31\Rightarrow r_0=\sqrt{318.31}\approx17.841\) cm.`},
+    {t:R_`<b>a)</b> \(\displaystyle\lim_{r\to\sqrt{1000/\pi}}\pi r^2=1000\). <b>b)</b> “Cuando el radio se acerca a 17.84 cm, el área se acerca a 1000 cm².”`},
+    {t:R_`<b>c)</b> Para todo \(\varepsilon\gt0\) existe \(\delta\gt0\) tal que si \(|r-17.841|\lt\delta\), entonces \(|\pi r^2-1000|\lt\varepsilon\).`},
+    {t:R_`\(\varepsilon\): 5 % de 1000 \(=0.05\times1000=50\) cm².`, w:R_`\(\varepsilon=50\) cm² (unidades del área), no 5.`},
+    {t:R_`Área aceptable: \(|\pi r^2-1000|\lt50\iff950\lt\pi r^2\lt1050\).`},
+    {t:R_`Despejamos \(r\) (dividir por \(\pi\) y sacar raíz, \(r\gt0\)):\[\begin{aligned}\tfrac{950}\pi\lt r^2&\lt\tfrac{1050}\pi\\302.39\lt r^2&\lt334.23\\17.3895\lt r&\lt18.2818\end{aligned}\]`},
+    {t:R_`Distancias desde \(r_0=17.8412\): abajo \(17.8412-17.3895=0.4517\); arriba \(18.2818-17.8412=0.4406\).`},
+    {t:R_`Elegimos la menor: \(\delta=0.4406\approx0.44\) cm.`, k:R_`Se toma la <b>menor</b> distancia para que todo \((r_0-\delta,r_0+\delta)\) quede dentro de la tolerancia.`},
+    {t:R_`<b>Justificación:</b> si tomáramos 0.4517, radios como 18.29 cm (dentro de \(r_0+0.4517\)) darían \(\pi(18.29)^2\approx1051\gt1050\): fuera de tolerancia.`},
+    {t:R_`<b>Respuesta:</b> \(\varepsilon=50\) cm², \(\delta\approx0.44\) cm: la máquina debe cortar el radio con error menor que 4.4 mm.`}],
+  ans:R_`\(\varepsilon=50\) cm², \(\delta\approx0.44\) cm`, g:OLD['pz-disco'].g },
+{ id:'pz-mancha', type:'composicion', src:'Prueba 2 · Ej. 3', title:'Mancha de aceite',
+  st:R_`\(r(t)=4t^2+20\) si \(0\le t\le2\); \(r(t)=16t+4\) si \(t\gt2\). Analice la continuidad de la función del <b>área</b> en todos los números reales.`,
+  steps:[
+    {t:R_`Área de la mancha circular: \(A(t)=\pi\,[r(t)]^2\).`},
+    {t:R_`<b>Dominio:</b> \(t\) es tiempo desde que empieza la fuga ⇒ \(t\ge0\). Para \(t\lt0\) la función <b>no está definida</b>.`, w:R_`“En todos los reales”: no puede ser continua en \(\mathbb R\) porque no existe para \(t\lt0\). Dilo explícitamente.`},
+    {t:R_`Continuidad de \(r\) en \(t=2\): \(r(2)=4(2)^2+20=16+20=36\); por la derecha \(16(2)+4=36\) ✓.`, k:R_`Si \(r\) es continua, \(A=\pi r^2\) también: basta revisar \(r\).`},
+    {t:R_`Por tramos:\[A(t)=\begin{cases}\pi(4t^2+20)^2,&0\le t\le2\\\pi(16t+4)^2,&t\gt2\end{cases}\]Polinomios ⇒ continuos en sus intervalos.`},
+    {t:R_`En \(t=2\): \(A(2)=\pi(36)^2=1296\pi\) por ambos lados ✓. En \(t=0\): \(\lim_{t\to0^+}A=\pi(20)^2=400\pi=A(0)\) ✓.`, q:R_`También por composición: ${RF('d-comp','D10')}.`},
+    {t:R_`<b>Conclusión:</b> \(A\) es continua en \([0,\infty)\), su dominio completo. Interpretación: el área crece sin saltos; al inicio ya mide \(400\pi\approx1257\) u².`}],
+  ans:R_`Continua en \([0,\infty)\); no definida para \(t\lt0\)`, g:OLD['pz-mancha'].g },
+{ id:'pz-horno', type:'epsdelta', src:'Taller · Horno', title:'Horno a 200 °C ± 1 °C',
+  st:R_`\(T(p)=0.1p^2+2.155p+20\) (\(T\) en °C, \(p\) en W). Queremos que la temperatura se acerque a 200 °C y varíe ±1 °C. Aplicando la definición formal de límite, ¿cuál es \(\delta\)?`,
+  steps:[
+    {t:R_`Entrada: potencia \(p\) (W). Salida: temperatura \(T\) (°C). \(L=200\), \(\varepsilon=1\) °C.`},
+    {t:R_`<b>Potencia ideal:</b> \(0.1p^2+2.155p+20=200\Rightarrow0.1p^2+2.155p-180=0\). Multiplicamos por 10: \(p^2+21.55p-1800=0\).`, k:R_`Primero se encuentra \(p_0\): sin él no se puede escribir el límite.`},
+    {t:R_`Fórmula general (\(a=1,\ b=21.55,\ c=-1800\)): discriminante \(21.55^2-4(1)(-1800)=464.40+7200=7664.40\); \(\sqrt{7664.40}\approx87.547\).\[p_0=\frac{-21.55+87.547}{2}\approx32.998\ \text{W}\]La otra raíz es negativa: se descarta.`},
+    {t:R_`<b>Límite:</b> \(\lim_{p\to32.998}T(p)=200\). <b>Definición:</b> \(\forall\varepsilon\gt0\ \exists\delta\gt0:\ |p-32.998|\lt\delta\Rightarrow|T(p)-200|\lt\varepsilon\).`},
+    {t:R_`\(|T-200|\lt1\iff199\lt T\lt201\). Resolvemos cada extremo igual que antes:`+TB(['','ecuación','\\(p\\)'],[['\\(T=199\\)','\\(p^2+21.55p-1790=0\\)','32.8839'],['\\(T=201\\)','\\(p^2+21.55p-1810=0\\)','33.1124']])+R_`(discriminantes 7624.40 y 7704.40)`},
+    {t:R_`Distancias desde \(p_0=32.9983\): abajo \(0.1144\); arriba \(0.1141\). \(\delta=0.1141\approx0.114\) W (la menor).`, w:R_`\(\varepsilon\) va en °C y \(\delta\) en W: no los confundas.`},
+    {t:R_`Verificar: \(T(32.998+0.114)\approx201.0\); \(T(32.998-0.114)\approx199.0\) ✓. La potencia debe controlarse en 33 W con error menor que 0.114 W.`}],
+  ans:R_`\(\delta\approx0.114\) W`, g:OLD['pz-horno'].g }
+];
+// péndulo: mostrar el despeje
+OLD['pz-pendulo'].steps.splice(0, 0, {t:R_`Despejamos \(L\): \(\frac{T}{2\pi}=\sqrt{\frac L{9.8}}\Rightarrow\frac{T^2}{4\pi^2}=\frac L{9.8}\Rightarrow L=\frac{9.8\,T^2}{4\pi^2}\). Con \(T=2\): \(L_0=\frac{9.8\cdot4}{4\pi^2}=\frac{9.8}{\pi^2}\).`, k:R_`Para despejar de una raíz: aísla la raíz y eleva al cuadrado.`});
+
+const INICIO_HTML = R_`
+<div class="sheet">
+<h3>Cómo usar este cuaderno</h3>
+<p>Cada problema está resuelto paso a paso. Antes de tocar <b>Siguiente paso</b>, intenta decir tú cuál es el siguiente paso.</p>
+<p><span class="hl-y">Clave:</span> lo que hay que recordar para cualquier problema parecido.</p>
+<p><span style="color:var(--red); border:1.5px solid var(--red); border-radius:6px; padding:0 5px">¡Ojo!</span> la trampa o el error que más baja puntos.</p>
+<p><span style="color:var(--pen); border-bottom:2px dashed var(--pen)">¿Por qué?</span> toca para ver la justificación; los enlaces como <b>D8</b> te llevan a la demostración completa, y el botón <b>← Volver al ejercicio</b> te regresa.</p>
+<h3>Ruta sugerida</h3>
+<p>1. <b>Demostraciones</b>: de dónde salen los teoremas que usas. 2. <b>Taller</b>: los 19 ejercicios. 3. <b>Prueba 2 y horno</b>: hazlos primero en hoja. 4. <b>Tipo examen</b>: los modelos que pueden tomar. 5. <b>Resumen</b>: la noche antes.</p>
+<h3>Controles</h3>
+<p>Computadora: flechas ← → o barra espaciadora. Celular: desliza el dedo sobre la hoja. <b>A−/A+</b> cambia la letra y <b>Ver todo</b> muestra la solución completa. Tu avance se guarda: los problemas terminados quedan con ✓ en el índice.</p>
+</div>`;
+const CHAPTERS = [
+  { id:'cap-inicio', name:'Inicio', short:'Inicio', items:[{ id:'inicio', type:'demo', src:'Bienvenido', title:'Cuaderno de resueltos', page:INICIO_HTML }] },
+  { id:'cap-demos', name:'Demostraciones', short:'Demostraciones', items:DEMOS },
+  { id:'cap-taller', name:'Taller (19 ejercicios)', short:'Taller', items:TALLER_FULL },
+  { id:'cap-prueba', name:'Prueba 2 y horno', short:'Prueba 2', items:PRUEBA_FULL },
+  { id:'cap-modelos', name:'Tipo examen: modelamiento', short:'Tipo examen', items:MODELOS },
+  { id:'cap-resumen', name:'Resumen', short:'Resumen', items:[{ id:'resumen', type:'demo', src:'Para la noche antes', title:'Resumen de todo', page:RESUMEN_HTML }] }
+];
+/* "¿Por qué?" en problemas heredados */
+const QPATCH = {
+  'pz-7':{0:R_`Los polinomios son continuos: ${RF('d-leyes','D2')}.`},
+  'pz-8':{1:R_`Se puede cancelar porque el límite no mira \(x=2\) (solo \(x\neq2\)); ver ${RF('t9','Ej. 9')}.`},
+  'pz-11':{1:R_`\(\sqrt x\) es continua: ${RF('d-raiz','D4')}.`},
+  'pz-globo':{0:R_`Composición: ${RF('d-comp','D10')}.`},
+  'pz-tvi':{0:R_`Polinomios continuos (${RF('d-leyes','D2')}) y TVI (${RF('d-tvi','D11')}).`},
+  'pz-masa':{1:R_`Leyes del cociente y raíz: ${RF('d-racional','D3')}, ${RF('d-raiz','D4')}.`},
+  'pz-disco':{6:R_`Es el mismo razonamiento de la demostración de \(\ln\): ${RF('d-ln','D9')}.`}
+};
+CHAPTERS.forEach(C => C.items.forEach(P => { const base = P.id.startsWith('t') ? null : P.id; const src = QPATCH[P.id] || (Object.keys(OLD).find(k => OLD[k]===P) && QPATCH[Object.keys(OLD).find(k => OLD[k]===P)]); if(src && P.steps){ P.steps = P.steps.map((s,i) => src[i] ? Object.assign({}, s, {q:src[i]}) : s); } }));
+// los derivados con ext() conservan el id viejo en OLD; aplicar parches por título original
+[['t7','pz-7'],['t8','pz-8'],['t11','pz-11']].forEach(([nid, oid]) => { const P = TALLER.find(x => x.id===nid); const src = QPATCH[oid]; if(P && src) P.steps = P.steps.map((s,i) => src[i] ? Object.assign({}, s, {q:src[i]}) : s); });
+
+
+/* =================== CUADERNO: interfaz =================== */
+const FLAT = []; CHAPTERS.forEach((C,ci) => C.items.forEach((P,pi) => FLAT.push({ci, pi, P})));
+const byId = id => FLAT.findIndex(f => f.P.id === id);
+let idx = 0, shown = 1, all = false, fs = window.innerWidth < 760 ? 17 : 20;
+const back = [];
+const seen = new Set();
+try { const v = parseInt(localStorage.getItem('cuadFs')); if(v>=14 && v<=32) fs = v; } catch(e){}
+try { const v = parseInt(localStorage.getItem('cuadIdx')); if(v>=0 && v<FLAT.length) idx = v; } catch(e){}
+try { JSON.parse(localStorage.getItem('cuadSeen')||'[]').forEach(x => seen.add(x)); } catch(e){}
+
+function drawer(open){ $('#pzIndex').classList.toggle('open', open); $('#pzScrim').hidden = !open; $('#pzMenu').setAttribute('aria-expanded', open); }
+function buildIndex(){
+  $('#pzIndex').innerHTML = '<h2>Índice</h2>' + CHAPTERS.map((C,ci) => `<div class="pz-grp"><div class="pz-gname">${C.name}</div>${C.items.map(P => `<button data-id="${P.id}">${P.title}<span class="pz-src">${P.src}</span></button>`).join('')}</div>`).join('');
+  $$('#pzIndex button').forEach(b => b.addEventListener('click', () => { drawer(false); back.length = 0; go(byId(b.dataset.id), true); }));
+  $('#tabs').innerHTML = CHAPTERS.map((C,ci) => `<button class="tab" data-ci="${ci}">${C.short}</button>`).join('');
+  $$('#tabs .tab').forEach(b => b.addEventListener('click', () => { back.length = 0; go(FLAT.findIndex(f => f.ci === +b.dataset.ci), true); }));
+}
+function render(){
+  const {ci, P} = FLAT[idx]; const T = TYPES[P.type] || TYPES.demo;
+  $('#pzType').textContent = CHAPTERS[ci].name + ((P.page || P.type==='demo') ? '' : ' · ' + T.name);
+  if(P.page){
+    $('#pzProb').innerHTML = `<div class="pz-head"><span class="pz-srcbig">${P.src}</span><br><h2>${P.title}</h2></div>${P.page}`;
+  } else {
+    const steps = P.steps.map((s,i) => `<li class="pz-step" data-i="${i}"><span class="pz-n">${i+1}</span><div class="pz-body"><div>${s.t}</div>${s.q?`<details class="porque"><summary>¿Por qué?</summary><div>${s.q}</div></details>`:''}${s.k?`<div class="clave"><span class="lbl">Clave:</span>${s.k}</div>`:''}${s.w?`<div class="trampa"><span class="lbl">¡Ojo!</span>${s.w}</div>`:''}</div></li>`).join('');
+    $('#pzProb').innerHTML = `<div class="pz-head"><span class="pz-srcbig">${P.src}</span><br><h2>${P.title}</h2></div><div class="pz-st">${P.st}</div><ol class="pz-steps">${steps}</ol><div class="pz-ans" hidden><span class="lbl">Respuesta:</span> ${P.ans}</div>`;
+  }
+  const cl = []; (P.steps||[]).forEach((s,i) => { if(s.k) cl.push(`<li data-i="${i}"><span class="lbl">Clave:</span> ${s.k}</li>`); if(s.w) cl.push(`<li data-i="${i}" class="tw"><span class="lbl">¡Ojo!</span> ${s.w}</li>`); });
+  $('#pzClaves').innerHTML = cl.join('') || '<li>—</li>';
+  $('#pzReco').innerHTML = T.reco.map(r => `<li>${r}</li>`).join('');
+  $('#pzReceta').innerHTML = T.receta.map(r => `<li>${r}</li>`).join('');
+  $$('#pzIndex button').forEach(b => { b.setAttribute('aria-current', b.dataset.id === P.id); b.classList.toggle('seen', seen.has(b.dataset.id)); });
+  $$('#tabs .tab').forEach(b => b.setAttribute('aria-current', +b.dataset.ci === ci));
+  const cur = $(`#pzIndex button[data-id="${P.id}"]`); if(cur) cur.scrollIntoView({block:'nearest'});
+  const ct = $(`#tabs .tab[data-ci="${ci}"]`); if(ct) ct.scrollIntoView({block:'nearest', inline:'nearest'});
+  $('#pzBack').hidden = back.length === 0;
+  apply();
+  typeset($('.pz'));
+  requestAnimationFrame(drawGraph);
+  try { history.replaceState(null, '', '#'+P.id); localStorage.setItem('cuadIdx', idx); } catch(e){}
+}
+function drawGraph(){ const P = FLAT[idx].P; const box = $('#pzGraphBox'); if(!P.g){ box.hidden = true; return; } box.hidden = false; plot($('#pzGraph'), P.g); }
+function nSteps(){ const P = FLAT[idx].P; return P.steps ? P.steps.length : 1; }
+function apply(){
+  const P = FLAT[idx].P, n = nSteps(), sh = all ? n : Math.min(shown, n);
+  $$('#pzProb .pz-step').forEach((li,i) => { li.classList.toggle('pz-hid', i>=sh); li.classList.toggle('pz-cur', !all && i===sh-1); });
+  $$('#pzClaves li[data-i]').forEach(li => li.hidden = +li.dataset.i >= sh);
+  const ans = $('#pzProb .pz-ans'); if(ans) ans.hidden = sh < n;
+  if(sh >= n && !seen.has(P.id)){ seen.add(P.id); try{ localStorage.setItem('cuadSeen', JSON.stringify([...seen])); }catch(e){} const b = $(`#pzIndex button[data-id="${P.id}"]`); if(b) b.classList.add('seen'); }
+  $('#pzNext').textContent = sh < n ? 'Siguiente paso →' : (idx < FLAT.length-1 ? 'Siguiente problema →' : 'Fin del cuaderno');
+  $('#pzNext').disabled = sh >= n && idx >= FLAT.length-1;
+  $('#pzPrev').disabled = sh <= 1 && idx === 0;
+  $('#pzProg').textContent = P.steps ? `Paso ${sh} de ${n}` : '';
+  $('#pzAll').setAttribute('aria-pressed', all);
+  const cur = $('#pzProb .pz-cur'); if(cur && !all && shown > 1) cur.scrollIntoView({block:'nearest', behavior: reduceMotion ? 'auto' : 'smooth'});
+}
+function go(k, fromStart){ if(k < 0) return; idx = Math.max(0, Math.min(FLAT.length-1, k)); shown = fromStart ? 1 : nSteps(); render(); window.scrollTo({top:0}); }
+function next(){ if(!all && shown < nSteps()){ shown++; apply(); } else if(idx < FLAT.length-1) go(idx+1, true); }
+function prev(){ if(!all && shown > 1){ shown--; apply(); } else if(idx > 0) go(idx-1, false); }
+function font(d){ fs = Math.max(14, Math.min(32, fs+d)); document.documentElement.style.setProperty('--pz-fs', fs+'px'); try{ localStorage.setItem('cuadFs', fs); }catch(e){} }
+
+$('#pzNext').addEventListener('click', next);
+$('#pzPrev').addEventListener('click', prev);
+$('#pzAll').addEventListener('click', () => { all = !all; apply(); });
+$('#pzPrevProb').addEventListener('click', () => go(idx-1, true));
+$('#pzNextProb').addEventListener('click', () => go(idx+1, true));
+$('#pzFm').addEventListener('click', () => font(-1));
+$('#pzFp').addEventListener('click', () => font(1));
+$('#pzMenu').addEventListener('click', () => drawer(!$('#pzIndex').classList.contains('open')));
+$('#pzScrim').addEventListener('click', () => drawer(false));
+$('#pzBack').addEventListener('click', () => { const b = back.pop(); if(b){ idx = b.idx; shown = b.shown; render(); window.scrollTo({top:0}); } });
+document.addEventListener('click', e => {
+  const a = e.target.closest('a.ref'); if(!a) return;
+  e.preventDefault(); const k = byId(a.dataset.go); if(k < 0) return;
+  back.push({idx, shown}); go(k, false);
+});
+document.addEventListener('keydown', e => {
+  const tag = (e.target.tagName||'').toLowerCase(); if(tag==='input' || tag==='select' || tag==='textarea') return;
+  if(e.key==='Escape'){ drawer(false); return; }
+  if(e.key==='ArrowRight' || e.key==='PageDown' || (e.key===' ' && tag!=='button' && tag!=='summary')){ e.preventDefault(); next(); }
+  else if(e.key==='ArrowLeft' || e.key==='PageUp'){ e.preventDefault(); prev(); }
+});
+{ let sx=0, sy=0, st=0; const el = $('#pzProb');
+  el.addEventListener('touchstart', e => { const t=e.changedTouches[0]; sx=t.clientX; sy=t.clientY; st=Date.now(); }, {passive:true});
+  el.addEventListener('touchend', e => { const t=e.changedTouches[0]; const dx=t.clientX-sx, dy=t.clientY-sy; if(Math.abs(dx)>60 && Math.abs(dx)>1.5*Math.abs(dy) && Date.now()-st<700){ if(dx<0) next(); else prev(); } }, {passive:true}); }
+window.addEventListener('hashchange', () => { const k = byId(location.hash.slice(1)); if(k >= 0 && k !== idx) go(k, true); });
+window.addEventListener('resize', () => { clearTimeout(window.__rt); window.__rt = setTimeout(drawGraph, 150); });
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(drawGraph);
+window.CUAD = { n: FLAT.length, go: k => go(k, true), all: v => { all = v; apply(); }, next };
+buildIndex(); font(0);
+{ const k = byId(location.hash.slice(1)); if(k >= 0) idx = k; }
+render();
+
+})();
+</script>
+</body>
+</html>
